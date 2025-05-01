@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header"; // Importa nosso Header
+import ChatWidget from "@/components/ai/ChatWidget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           {children} {/* Conteúdo da página será renderizado aqui */} 
         </main>
         {/* Poderíamos adicionar um Footer aqui no futuro */}
+        <ChatWidget />
       </body>
     </html>
   );

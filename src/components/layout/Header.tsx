@@ -15,13 +15,21 @@ const Header = () => {
         <div className="flex gap-x-4">
           <Link
             href="/dashboard"
-            className="text-gray-600 hover:text-blue-700 transition-colors">
+            className="text-gray-600 hover:text-blue-700 transition-colors"
+          >
             Dashboard
           </Link>
           <Link
             href="/projects"
-            className="text-gray-600 hover:text-blue-700 transition-colors">
+            className="text-gray-600 hover:text-blue-700 transition-colors"
+          >
             Projetos
+          </Link>
+          <Link
+            href="/requests"
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Pedir Solução
           </Link>
         </div>
       </nav>
