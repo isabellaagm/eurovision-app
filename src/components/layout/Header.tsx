@@ -26,6 +26,12 @@ const Header = () => {
             Projetos
           </Link>
           <Link
+            href="/gamification"
+            className="text-gray-600 hover:text-blue-700 transition-colors"
+          >
+            Trilhas
+          </Link>
+          <Link
             href="/requests"
             className="text-eurofarma-blue font-medium !hover:underline"
           >
