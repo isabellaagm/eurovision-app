@@ -5,29 +5,29 @@ import Link from "next/link";
 const Header = () => {
   return (
     <header className="bg-white shadow-md !p-5">
-      <nav className="container mx-auto flex justify-between items-center">
+      <nav className="container !mx-auto flex justify-between items-center">
         {/* Logo/Título */}
-        <Link href="/" className="text-2xl font-bold !text-blue-700">
+        <Link href="/" className="text-2xl font-bold text-eurofarma-blue">
           EuroVision
         </Link>
 
         {/* Links de Navegação */}
-        <div className="flex gap-x-4">
+        <div className="flex !gap-x-4">
           <Link
             href="/dashboard"
-            className="text-gray-600 hover:text-blue-700 transition-colors"
+            className="text-light-black !hover:text-eurofarma-blue transition-colors"
           >
             Dashboard
           </Link>
           <Link
             href="/projects"
-            className="text-gray-600 hover:text-blue-700 transition-colors"
+            className="text-light-black hover:text-eurofarma-blue transition-colors"
           >
             Projetos
           </Link>
           <Link
             href="/requests"
-            className="text-blue-600 font-medium hover:underline"
+            className="text-eurofarma-blue font-medium !hover:underline"
           >
             Pedir Solução
           </Link>
