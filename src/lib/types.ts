@@ -26,6 +26,14 @@ export interface Project {
     full_name?: string | null;
     avatar_url?: string | null;
   } | null;
+   project_participants?: {
+    user_id: string;
+    users?: {
+      full_name?: string | null;
+      avatar_url?: string | null;
+      job_title?: string | null;
+    } | null;
+  }[] | null;
   // Se precisarmos de participantes diretamente no objeto Project, seria uma lista de UserProfile ou de IDs.
   // project_participants?: ProjectParticipant[]; 
 }
@@ -59,7 +67,7 @@ export interface TrailStage {
   points_awarded?: number;
   badge_id_to_award?: string | null; // UUID do badge concedido
   criteria_type?: string | null; // Tipo de critério para completar (ex: "submit_task", "receive_approval")
-  criteria_details?: any | null; // JSONB com detalhes do critério
+  criteria_details?: Record<string, unknown> | null; // JSONB com detalhes do critério
   badge_to_award?: Badge | null; // Opcional, para dados do badge
 }
 
@@ -76,10 +84,11 @@ export interface InnovationTrail {
 
 // Progresso de gamificação de um usuário (geral)
 export interface UserGamificationProgress {
-  earnedBadgeIds: any;
   user_id: string; // UUID, chave primária e estrangeira para users.id
   current_points: number;
   updated_at?: string;
+  earned_badge_ids: string[];
+  completed_stage_ids: string[];
   // Badges e estágios completados seriam buscados de suas respectivas tabelas
   // user_earned_badges?: UserEarnedBadge[];
   user_completed_stages?: UserCompletedStage[];

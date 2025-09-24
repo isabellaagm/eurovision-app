@@ -4,11 +4,24 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // Função para criar um cliente Supabase do lado do servidor (pode ser movida para um helper)
-function createSupabaseServerClient() {
-  const cookieStore = cookies();
+type SupabaseCookieStore = {
+  get(name: string): { value: string } | undefined;
+  set(options: { name: string; value: string } & CookieOptions): void;
+};
+
+async function createSupabaseServerClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Variáveis de ambiente do Supabase não configuradas.");
+    return null;
+  }
+
+  const cookieStore = (await cookies()) as unknown as SupabaseCookieStore;
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -30,8 +43,14 @@ interface RouteParams {
 }
 
 // GET: Buscar um projeto específico por ID
-export async function GET(request: Request, { params }: RouteParams) {
-  const supabase = createSupabaseServerClient();
+export async function GET(_request: Request, { params }: RouteParams) {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
   const projectId = params.id;
 
   try {
@@ -73,18 +92,19 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ project });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(`Erro inesperado na API do projeto ${projectId} (GET):`, err);
-    return NextResponse.json(
-      { error: err.message || "Erro interno do servidor." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 // PUT: Atualizar um projeto específico
 export async function PUT(request: Request, { params }: RouteParams) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
   const projectId = params.id;
 
   try {
@@ -104,7 +124,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
         return NextResponse.json({ error: "Nenhum dado fornecido para atualização." }, { status: 400 });
     }
 
-    const updateData: any = {};
+    const updateData: Partial<{ name: string; description: string; status: string; gerencia: string }> = {};
     if (name) updateData.name = name;
     if (description) updateData.description = description;
     if (status) updateData.status = status;
@@ -141,18 +161,19 @@ export async function PUT(request: Request, { params }: RouteParams) {
       );
     }
     return NextResponse.json({ project: updatedProject });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(`Erro inesperado na API do projeto ${projectId} (PUT):`, err);
-    return NextResponse.json(
-      { error: err.message || "Erro interno do servidor." },
-      { status: 500 }
-    );
+   const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 // DELETE: Excluir um projeto específico
 export async function DELETE(request: Request, { params }: RouteParams) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
   const projectId = params.id;
 
   try {
@@ -183,11 +204,9 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ message: "Projeto excluído com sucesso." }, { status: 200 }); // Ou 204 No Content
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(`Erro inesperado na API do projeto ${projectId} (DELETE):`, err);
-    return NextResponse.json(
-      { error: err.message || "Erro interno do servidor." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

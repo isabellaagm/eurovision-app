@@ -5,6 +5,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import ProjectCard from "@/components/projects/ProjectCard";
 import { Project } from "@/lib/types"; // Certifique-se que o tipo Project está correto
 
+const isNonNullable = <T,>(value: T): value is NonNullable<T> => value !== null && value !== undefined;
+
 export default function ProjectsPage() {
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,9 +32,10 @@ export default function ProjectsPage() {
         }
         const data = await response.json();
         setAllProjects(data.projects || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erro ao buscar projetos:", err);
-        setError(err.message || "Ocorreu um erro ao carregar os projetos.");
+        const message = err instanceof Error ? err.message : "Ocorreu um erro ao carregar os projetos.";
+        setError(message);
         setAllProjects([]); // Limpa os projetos em caso de erro
       }
       setIsLoading(false);
@@ -44,12 +47,12 @@ export default function ProjectsPage() {
   // Opções únicas para filtros (agora baseadas nos dados carregados)
   const statuses = useMemo(() => {
     if (isLoading || error) return ["All"];
-    return ["All", ...Array.from(new Set(allProjects.map((p) => p.status).filter(Boolean)))];
+    return ["All", ...Array.from(new Set(allProjects.map((p) => p.status).filter(isNonNullable)))];
   }, [allProjects, isLoading, error]);
 
   const gerencias = useMemo(() => {
     if (isLoading || error) return ["All"];
-    return ["All", ...Array.from(new Set(allProjects.map((p) => p.gerencia).filter(Boolean)))];
+    return ["All", ...Array.from(new Set(allProjects.map((p) => p.gerencia).filter(isNonNullable)))];
   }, [allProjects, isLoading, error]);
 
   // Lista filtrada

@@ -1,5 +1,5 @@
 // src/lib/mockData.ts
-import { Project, DashboardMetric } from "./types";
+import { Project, DashboardMetric, Badge, InnovationTrail, UserGamificationProgress, UserProfile, UserCompletedStage } from "./types";
 
 // Dados mockados para Projetos
 export const mockProjects: Project[] = [
@@ -36,9 +36,6 @@ export const mockProjectsSummary = {
   ]
 };
 
-// Dados Mockados para Gamificação
-import { Badge, InnovationTrail, UserGamificationProgress, UserProfile, UserCompletedStage } from "./types";
-
 export const mockBadges: Badge[] = [
   { id: "B001", name: "Inovador Iniciante", description: "Completou sua primeira trilha de inovação.", image_url: "/icons/badge_beginner.svg" },
   { id: "B002", name: "Mestre das Ideias", description: "Submeteu 5 ideias de alta qualidade.", image_url: "/icons/badge_idea_master.svg" },
@@ -54,19 +51,33 @@ export const mockInnovationTrails: InnovationTrail[] = [
     icon_url: "/icons/trail_sustainability.svg",
     stages: [
       {
-        id: "T001S001", name: "Introdução à Sustentabilidade", description: "Leia o material sobre os pilares da sustentabilidade.", criteria_type: "read_sustainability_intro_material", points_awarded: 10,
-        trail_id: "",
-        stage_sequence: 0
+        id: "T001S001",
+        trail_id: "T001",
+        name: "Introdução à Sustentabilidade",
+        description: "Leia o material sobre os pilares da sustentabilidade.",
+        criteria_type: "read_sustainability_intro_material",
+        points_awarded: 10,
+        stage_sequence: 1,
       },
       {
-        id: "T001S002", name: "Ideia Sustentável", description: "Submeta uma ideia de projeto com foco em sustentabilidade.", criteria_type: "submit_idea_sustainability_topic", points_awarded: 50, badge_to_award: mockBadges[3],
-        trail_id: "",
-        stage_sequence: 0
+        id: "T001S002",
+        trail_id: "T001",
+        name: "Ideia Sustentável",
+        description: "Submeta uma ideia de projeto com foco em sustentabilidade.",
+        criteria_type: "submit_idea_sustainability_topic",
+        points_awarded: 50,
+        badge_id_to_award: mockBadges[3].id,
+        badge_to_award: mockBadges[3],
+        stage_sequence: 2,
       },
       {
-        id: "T001S003", name: "Feedback Construtivo", description: "Comente em pelo menos duas outras ideias da trilha de sustentabilidade.", criteria_type: "comment_on_2_sustainability_ideas", points_awarded: 20,
-        trail_id: "",
-        stage_sequence: 0
+        id: "T001S003",
+        trail_id: "T001",
+        name: "Feedback Construtivo",
+        description: "Comente em pelo menos duas outras ideias da trilha de sustentabilidade.",
+        criteria_type: "comment_on_2_sustainability_ideas",
+        points_awarded: 20,
+        stage_sequence: 3,
       },
     ]
   },
@@ -77,14 +88,22 @@ export const mockInnovationTrails: InnovationTrail[] = [
     icon_url: "/icons/trail_optimization.svg",
     stages: [
       {
-        id: "T002S001", name: "Mapeamento de Processo Atual", description: "Analise um processo existente e identifique gargalos.", criteria_type: "analyze_current_process_bottlenecks", points_awarded: 30,
-        trail_id: "",
-        stage_sequence: 0
+        id: "T002S001",
+        trail_id: "T002",
+        name: "Mapeamento de Processo Atual",
+        description: "Analise um processo existente e identifique gargalos.",
+        criteria_type: "analyze_current_process_bottlenecks",
+        points_awarded: 30,
+        stage_sequence: 1,
       },
       {
-        id: "T002S002", name: "Proposta de Melhoria", description: "Submeta uma ideia para otimizar o processo analisado.", criteria_type: "submit_idea_process_optimization", points_awarded: 50,
-        trail_id: "",
-        stage_sequence: 0
+        id: "T002S002",
+        trail_id: "T002",
+        name: "Proposta de Melhoria",
+        description: "Submeta uma ideia para otimizar o processo analisado.",
+        criteria_type: "submit_idea_process_optimization",
+        points_awarded: 50,
+        stage_sequence: 2,
       },
     ]
   }
@@ -93,16 +112,19 @@ export const mockInnovationTrails: InnovationTrail[] = [
 export const mockUser: UserProfile = {
   id: "U001",
   full_name: "Usuário Teste",
+  job_title: "Inovador",
 };
 
 export const mockUserCompletedStage: UserCompletedStage = {
   user_id: "U001",
-  stage_id: "T001S001"
-}
+  stage_id: "T001S001",
+  completed_at: "2024-04-01T12:00:00Z",
+};
 export const mockUserGamificationProgress: UserGamificationProgress = {
   user_id: "U001",
   current_points: 60,
-  earnedBadgeIds: ["B001"],
+  earned_badge_ids: ["B001"],
+  completed_stage_ids: ["T001S001"],
   user_completed_stages: [mockUserCompletedStage],
 };
 

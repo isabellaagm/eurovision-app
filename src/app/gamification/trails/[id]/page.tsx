@@ -82,6 +82,8 @@ export default function TrailDetailPage() {
   if (error) return <p className="!p-6 text-center text-red-500">Erro: {error}</p>;
   if (!trail) return <p className="!p-6 text-center">Trilha não encontrada.</p>;
 
+  const stages = trail.stages ?? [];
+
   return (
     <div className="!p-6">
       <Link href="/gamification" className="text-blue-600 hover:underline !mb-6 inline-block">
@@ -90,9 +92,9 @@ export default function TrailDetailPage() {
 
       <div className="bg-white !p-8 rounded-lg shadow-lg !mb-8">
         <div className="flex items-center !mb-4">
-          {trail.iconUrl && (
+          {trail.icon_url && (
             <div className="!mr-4 flex-shrink-0">
-              <Image src={trail.iconUrl} alt={`${trail.name} icon`} width={60} height={60} className="rounded-full" />
+              <Image src={trail.icon_url} alt={`${trail.name} icon`} width={60} height={60} className="rounded-full" />
             </div>
           )}
           <h2 className="text-3xl font-bold text-gray-800">{trail.name}</h2>
@@ -101,22 +103,22 @@ export default function TrailDetailPage() {
       </div>
 
       <h3 className="text-2xl font-semibold !mb-4">Etapas da Trilha</h3>
-      {trail.stages.length > 0 ? (
+      {stages.length > 0 ? (
         <div className="!space-y-4">
-          {trail.stages.map((stage, index) => {
-            const isCompleted = userProgress?.completedStageIds.includes(stage.id);
-            const badgeToAward = stage.badgeIdToAward ? mockBadges.find(b => b.id === stage.badgeIdToAward) : null;
+          {stages.map((stage, index) => {
+            const isCompleted = userProgress?.completed_stage_ids.includes(stage.id);
+            const badgeToAward = stage.badge_id_to_award ? mockBadges.find(b => b.id === stage.badge_id_to_award) : null;
             return (
               <div key={stage.id} className={`!p-5 rounded-md border ${isCompleted ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"}`}>
                 <h4 className={`text-xl font-semibold ${isCompleted ? "text-green-700" : "text-gray-800"}`}>
                   Etapa {index + 1}: {stage.name} {isCompleted && "(Concluída)"}
                 </h4>
                 <p className="text-gray-600 !my-2">{stage.description}</p>
-                <p className="text-sm text-blue-500">Pontos: {stage.pointsAwarded}</p>
+                <p className="text-sm text-blue-500">Pontos: {stage.points_awarded ?? 0}</p>
                 {badgeToAward && (
                     <div className="!mt-3">
                         <p className="text-sm font-medium text-gray-700 !mb-1">Recompensa por completar esta etapa:</p>
-                        <BadgeCard badge={badgeToAward} earned={userProgress?.earnedBadgeIds.includes(badgeToAward.id) || false} />
+                        <BadgeCard badge={badgeToAward} earned={userProgress?.earned_badge_ids.includes(badgeToAward.id) || false} />
                     </div>
                 )}
                 {!isCompleted && (

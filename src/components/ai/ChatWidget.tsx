@@ -1,15 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 
-export default function ChatWidget() {
+interface ChatWidgetProps {
+  isConfigured: boolean;
+}
+
+export default function ChatWidget({ isConfigured }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([])
   const [userInput, setUserInput] = useState('')
 
+  const unavailableMessage = useMemo(
+    () => 'Assistente indisponível. Configure a variável OPENROUTER_API_KEY para ativar o chat.',
+    []
+  )
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isConfigured) {
+      return
+    }
     if (!userInput.trim()) return
 
     // adiciona mensagem do usuário
@@ -114,6 +126,11 @@ export default function ChatWidget() {
 
         {/* Área de mensagens */}
         <div className="flex-1 overflow-y-auto !px-4 !py-2 space-y-2 bg-white">
+          {!isConfigured && (
+            <div className="text-xs text-orange-700 bg-orange-50 border border-orange-200 rounded-md !px-3 !py-2">
+              {unavailableMessage}
+            </div>
+          )}
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -136,15 +153,17 @@ export default function ChatWidget() {
           <input
             className="flex-1 border border-gray-300 rounded-full !px-4 !py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="text"
-            placeholder="Digite uma mensagem..."
+            placeholder={isConfigured ? 'Digite uma mensagem...' : 'Chat indisponível no momento'}
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
+            disabled={!isConfigured}
           />
           <button
             type="submit"
-            className="shrink-0 bg-blue-600 text-white !px-4 !py-1.5 rounded-full hover:bg-blue-700 text-sm transition"
-          >
-            Enviar
+            className="shrink-0 bg-blue-600 text-white !px-4 !py-1.5 rounded-full hover:bg-blue-700 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!isConfigured}
+            >
+            {isConfigured ? 'Enviar' : 'Indisponível'}
           </button>
         </form>
       </div>

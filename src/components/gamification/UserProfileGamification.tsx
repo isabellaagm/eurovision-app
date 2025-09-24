@@ -1,22 +1,35 @@
 // src/components/gamification/UserProfileGamification.tsx
 import React from 'react';
-import { UserGamificationProgress, Badge, User } from '@/lib/types';
+import { UserGamificationProgress, Badge, UserProfile } from '@/lib/types';
 // import { mockBadges, mockUser } from '@/lib/mockData'; // Removido pois não está sendo usado diretamente aqui
 import BadgeCard from './BadgeCard';
 
 interface UserProfileGamificationProps {
   progress: UserGamificationProgress;
-  user: User;
+  user: UserProfile;
   allBadges: Badge[]; // Pass all available badges to find details
 }
 
 const UserProfileGamification: React.FC<UserProfileGamificationProps> = ({ progress, user, allBadges }) => {
-  const earnedBadgesDetails = allBadges.filter(badge => progress.earnedBadgeIds.includes(badge.id));
+  const earnedBadgeIds = progress.earned_badge_ids ?? [];
+  const completedStageIds = progress.completed_stage_ids ?? [];
+
+  const earnedBadgesDetails = allBadges.filter((badge) => earnedBadgeIds.includes(badge.id));
+
+  const userName = user.full_name ?? 'Colaborador';
 
   return (
     <div className="!p-6 bg-white rounded-lg border border-gray-200 shadow-md">
-      <h3 className="text-2xl font-semibold text-gray-800 !mb-2">Progresso de {user.name}</h3>
-      <p className="text-lg text-blue-600 font-bold !mb-4">Pontos Atuais: {progress.current_points}</p>
+      <h3 className="text-2xl font-semibold text-gray-800 !mb-2">Progresso de {userName}</h3>
+      {user.job_title && (
+        <p className="text-sm text-gray-500 !mb-2">{user.job_title}</p>
+      )}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between !gap-2 !mb-4">
+        <p className="text-lg text-blue-600 font-bold">Pontos atuais: {progress.current_points}</p>
+        <p className="text-sm text-gray-600">
+          Etapas concluídas: {completedStageIds.length}
+        </p>
+      </div>
 
       <h4 className="text-xl font-semibold text-gray-700 !mt-6 !mb-3">Badges Conquistados:</h4>
       {earnedBadgesDetails.length > 0 ? (
