@@ -5,10 +5,18 @@ import { cookies } from "next/headers";
 
 // Função para criar um cliente Supabase do lado do servidor
 function createSupabaseServerClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Variáveis de ambiente do Supabase não configuradas.");
+    return null;
+  }
+
   const cookieStore = cookies();
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -26,8 +34,11 @@ function createSupabaseServerClient() {
 }
 
 // GET: Listar todos os projetos (respeitando RLS)
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -58,18 +69,19 @@ export async function GET(request: Request) {
       );
     }
     return NextResponse.json({ projects });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Erro inesperado na API de projetos (GET):", err);
-    return NextResponse.json(
-      { error: err.message || "Erro interno do servidor." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 // POST: Criar um novo projeto
 export async function POST(request: Request) {
   const supabase = createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -138,11 +150,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ project: newProject }, { status: 201 });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Erro inesperado na API de projetos (POST):", err);
-    return NextResponse.json(
-      { error: err.message || "Erro interno do servidor." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

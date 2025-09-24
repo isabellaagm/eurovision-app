@@ -30,9 +30,10 @@ export default function ProjectsPage() {
         }
         const data = await response.json();
         setAllProjects(data.projects || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erro ao buscar projetos:", err);
-        setError(err.message || "Ocorreu um erro ao carregar os projetos.");
+        const message = err instanceof Error ? err.message : "Ocorreu um erro ao carregar os projetos.";
+        setError(message);
         setAllProjects([]); // Limpa os projetos em caso de erro
       }
       setIsLoading(false);

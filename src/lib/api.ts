@@ -15,14 +15,8 @@ export async function getAllProjects(): Promise<Project[]> {
   return mockProjects;
 }
 
-// Simula a busca de um projeto por ID
-export async function getProjectById(id: string): Promise<Project | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 80)); 
-  return mockProjects.find(p => p.id === id);
-}
-
 // Simula a busca do resumo de projetos para gráficos
 export async function getProjectsSummary(): Promise<typeof mockProjectsSummary> {
-  await new Promise(resolve => setTimeout(resolve, 60)); 
+  await new Promise(resolve => setTimeout(resolve, 60));
   return mockProjectsSummary;
 }

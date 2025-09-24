@@ -17,15 +17,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isChatConfigured = Boolean(process.env.OPENROUTER_API_KEY);
+
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <Header /> {/* Adiciona o Header aqui */} 
+        <Header /> {/* Adiciona o Header aqui */}
         <main className="p-4 md:p-6">
-          {children} {/* Conteúdo da página será renderizado aqui */} 
+          {children} {/* Conteúdo da página será renderizado aqui */}
         </main>
         {/* Poderíamos adicionar um Footer aqui no futuro */}
-        <ChatWidget />
+        <ChatWidget isConfigured={isChatConfigured} />
       </body>
     </html>
   );

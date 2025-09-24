@@ -40,21 +40,21 @@ export async function POST(request: Request) {
       }
 
       // Verifica se a etapa já foi completada
-      if (userProgressStore.completedStageIds.includes(stageId)) {
+      if (userProgressStore.completed_stage_ids.includes(stageId)) {
         return NextResponse.json({ message: "Etapa já completada anteriormente.", progress: userProgressStore }, { status: 200 });
       }
 
       // Atualiza o progresso
-      userProgressStore.completedStageIds.push(stageId);
-      userProgressStore.currentPoints += stage.pointsAwarded;
+      userProgressStore.completed_stage_ids.push(stageId);
+      userProgressStore.current_points += stage.points_awarded ?? 0;
 
-      if (stage.badgeIdToAward && !userProgressStore.earnedBadgeIds.includes(stage.badgeIdToAward)) {
-        const badgeExists = mockBadges.find(b => b.id === stage.badgeIdToAward);
+      if (stage.badge_id_to_award && !userProgressStore.earned_badge_ids.includes(stage.badge_id_to_award)) {
+        const badgeExists = mockBadges.find(b => b.id === stage.badge_id_to_award);
         if (badgeExists) {
-            userProgressStore.earnedBadgeIds.push(stage.badgeIdToAward);
+            userProgressStore.earned_badge_ids.push(stage.badge_id_to_award);
         }
       }
-      
+
       return NextResponse.json({ message: `Etapa "${stage.name}" completada!`, progress: userProgressStore });
     }
 
