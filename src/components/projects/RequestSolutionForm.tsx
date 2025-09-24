@@ -1,7 +1,7 @@
 // src/components/RequestSolutionForm.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function RequestSolutionForm() {
   const [title, setTitle] = useState('')
@@ -27,6 +27,18 @@ export default function RequestSolutionForm() {
       setStatus('error')
     }
   }
+
+  useEffect(() => {
+    if (status !== 'success') {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setStatus('idle')
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [status])
 
   return (
     <form

@@ -1,69 +1,91 @@
-'use client'
 
-import React, { useState, useMemo } from 'react'
-import { mockProjects } from '@/lib/mockData'
-import ProjectCard from '@/components/projects/ProjectCard'
+"use client";
+
+import React, { useState, useMemo, useEffect } from "react";
+import ProjectCard from "@/components/projects/ProjectCard";
+import { Project } from "@/lib/types"; // Certifique-se que o tipo Project está correto
 
 export default function ProjectsPage() {
-  // 1️⃣ Estado dos filtros
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('All')
-  const [gerenciaFilter, setGerenciaFilter] = useState('All')
-  const [dateStart, setDateStart] = useState('')
-  const [dateEnd, setDateEnd] = useState('')
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 2️⃣ Opções únicas
-  const statuses = useMemo(
-    () => ['All', ...Array.from(new Set(mockProjects.map((p) => p.status)))],
-    []
-  )
-  const gerencias = useMemo(
-    () => ['All', ...Array.from(new Set(mockProjects.map((p) => p.gerencia)))],
-    []
-  )
+  // Estados dos filtros
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [gerenciaFilter, setGerenciaFilter] = useState("All");
+  // Removidos filtros de data por enquanto para simplificar a migração para dados reais
+  // const [dateStart, setDateStart] = useState("");
+  // const [dateEnd, setDateEnd] = useState("");
 
-  // 3️⃣ Lista filtrada
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/projects");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Falha ao buscar projetos");
+        }
+        const data = await response.json();
+        setAllProjects(data.projects || []);
+      } catch (err: any) {
+        console.error("Erro ao buscar projetos:", err);
+        setError(err.message || "Ocorreu um erro ao carregar os projetos.");
+        setAllProjects([]); // Limpa os projetos em caso de erro
+      }
+      setIsLoading(false);
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Opções únicas para filtros (agora baseadas nos dados carregados)
+  const statuses = useMemo(() => {
+    if (isLoading || error) return ["All"];
+    return ["All", ...Array.from(new Set(allProjects.map((p) => p.status).filter(Boolean)))];
+  }, [allProjects, isLoading, error]);
+
+  const gerencias = useMemo(() => {
+    if (isLoading || error) return ["All"];
+    return ["All", ...Array.from(new Set(allProjects.map((p) => p.gerencia).filter(Boolean)))];
+  }, [allProjects, isLoading, error]);
+
+  // Lista filtrada
   const filteredProjects = useMemo(() => {
-    return mockProjects.filter((p) => {
-      // Busca por nome (case-insensitive)
-      if (
-        searchTerm &&
-        !p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) {
-        return false
+    if (isLoading || error) return [];
+    return allProjects.filter((p) => {
+      if (searchTerm && !p.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
       }
-      // Filtro de status
-      if (statusFilter !== 'All' && p.status !== statusFilter) {
-        return false
+      if (statusFilter !== "All" && p.status !== statusFilter) {
+        return false;
       }
-      // Filtro de gerência
-      if (gerenciaFilter !== 'All' && p.gerencia !== gerenciaFilter) {
-        return false
+      if (gerenciaFilter !== "All" && p.gerencia !== gerenciaFilter) {
+        return false;
       }
-      // Filtro de data de início
-      if (dateStart && new Date(p.startDate) < new Date(dateStart)) {
-        return false
-      }
-      // Filtro de data de início até
-      if (dateEnd && new Date(p.startDate) > new Date(dateEnd)) {
-        return false
-      }
-      return true
-    })
-  }, [searchTerm, statusFilter, gerenciaFilter, dateStart, dateEnd])
+      // Lógica de filtro de data removida temporariamente
+      return true;
+    });
+  }, [allProjects, searchTerm, statusFilter, gerenciaFilter, isLoading, error]);
+
+  if (isLoading) {
+    return <p className="!p-6 text-center">Carregando projetos...</p>;
+  }
+
+  if (error) {
+    return <p className="!p-6 text-center text-red-500">Erro: {error}</p>;
+  }
 
   return (
     <div className="!space-y-6">
-      {/* Cabeçalho */}
       <div className="!m-6 flex justify-between items-center">
         <h2 className="text-3xl font-semibold">Catálogo de Projetos</h2>
-        {/* Botão futuro de “Novo Projeto” */}
-        {/* <button className="btn-primary">Novo Projeto</button> */}
+        {/* TODO: Adicionar botão para criar novo projeto que leve a um formulário/modal */}
       </div>
 
-      {/* Filtros */}
-      <div className="bg-white !p-4 !m-6 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Busca por nome */}
+      <div className="bg-white !p-4 !m-6 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <input
           type="text"
           placeholder="Buscar por nome..."
@@ -71,8 +93,6 @@ export default function ProjectsPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-
-        {/* Filtro de status */}
         <select
           className="border !p-2 rounded w-full"
           value={statusFilter}
@@ -84,8 +104,6 @@ export default function ProjectsPage() {
             </option>
           ))}
         </select>
-
-        {/* Filtro de gerência */}
         <select
           className="border !p-2 rounded w-full"
           value={gerenciaFilter}
@@ -97,32 +115,15 @@ export default function ProjectsPage() {
             </option>
           ))}
         </select>
-
-        {/* Data de início mínima */}
-        <input
-          type="date"
-          className="border !p-2 rounded w-full"
-          value={dateStart}
-          onChange={(e) => setDateStart(e.target.value)}
-        />
-
-        {/* Data de início máxima */}
-        <input
-          type="date"
-          className="border !p-2 rounded w-full"
-          value={dateEnd}
-          onChange={(e) => setDateEnd(e.target.value)}
-        />
+        {/* Filtros de data removidos temporariamente */}
       </div>
 
-      {/* Total de resultados */}
       <p className="!m-6 text-sm text-gray-600">
         {filteredProjects.length} projeto
-        {filteredProjects.length === 1 ? '' : 's'} encontrado
-        {filteredProjects.length === 1 ? '' : 's'}
+        {filteredProjects.length === 1 ? "" : "s"} encontrado
+        {filteredProjects.length === 1 ? "" : "s"}
       </p>
 
-      {/* Grid de Projetos */}
       {filteredProjects.length > 0 ? (
         <div className="!m-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
@@ -131,9 +132,9 @@ export default function ProjectsPage() {
         </div>
       ) : (
         <p className="text-gray-500 text-center !mt-10">
-          Nenhum projeto encontrado.
+          Nenhum projeto encontrado com os filtros atuais.
         </p>
       )}
     </div>
-  )
+  );
 }

@@ -12,9 +12,9 @@ const TrailCard: React.FC<TrailCardProps> = ({ trail }) => {
   return (
     <Link href={`/gamification/trails/${trail.id}`} className="block !p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 transition-colors duration-200">
       <div className="flex items-center !mb-3">
-        {trail.iconUrl && (
+        {trail.icon_url && (
           <div className="!mr-4 flex-shrink-0">
-            <Image src={trail.iconUrl} alt={`${trail.name} icon`} width={40} height={40} className="rounded-full" />
+            <Image src={trail.icon_url} alt={`${trail.name} icon`} width={40} height={40} className="rounded-full" />
           </div>
         )}
         <h5 className="text-xl font-bold tracking-tight text-gray-900">{trail.name}</h5>

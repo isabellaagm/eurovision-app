@@ -24,8 +24,60 @@ export default function ChatWidget() {
         body: JSON.stringify({ prompt: promptToSend }),
       })
 
-      const data = await res.json()
-      const reply = data.response || 'Desculpe, sem resposta.'
+       const rawBody = await res.text()
+
+      if (!res.ok) {
+        let errorMessage = 'Erro ao obter resposta do assistente. Tente novamente mais tarde.'
+
+        if (rawBody) {
+          try {
+            const parsed = JSON.parse(rawBody)
+            const parsedMessage =
+              typeof parsed?.error === 'string'
+                ? parsed.error
+                : typeof parsed?.message === 'string'
+                  ? parsed.message
+                  : undefined
+
+            if (parsedMessage) {
+              errorMessage = parsedMessage
+            }
+          } catch {
+            errorMessage = rawBody
+          }
+        }
+
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: errorMessage },
+        ])
+        return
+      }
+
+      let data: unknown
+      try {
+        data = rawBody ? JSON.parse(rawBody) : {}
+      } catch (error) {
+        console.error('Falha ao interpretar resposta /api/ai/chat:', error)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'Não foi possível interpretar a resposta do assistente.',
+          },
+        ])
+        return
+      }
+
+      let reply: string | null = null
+      if (typeof data === 'object' && data !== null && 'response' in data) {
+        const candidate = (data as Record<string, unknown>).response
+        if (typeof candidate === 'string') {
+          reply = candidate
+        }
+      }
+
+      reply = reply || 'Desculpe, sem resposta.'
 
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {

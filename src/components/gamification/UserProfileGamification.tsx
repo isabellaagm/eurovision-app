@@ -16,7 +16,7 @@ const UserProfileGamification: React.FC<UserProfileGamificationProps> = ({ progr
   return (
     <div className="!p-6 bg-white rounded-lg border border-gray-200 shadow-md">
       <h3 className="text-2xl font-semibold text-gray-800 !mb-2">Progresso de {user.name}</h3>
-      <p className="text-lg text-blue-600 font-bold !mb-4">Pontos Atuais: {progress.currentPoints}</p>
+      <p className="text-lg text-blue-600 font-bold !mb-4">Pontos Atuais: {progress.current_points}</p>
 
       <h4 className="text-xl font-semibold text-gray-700 !mt-6 !mb-3">Badges Conquistados:</h4>
       {earnedBadgesDetails.length > 0 ? (

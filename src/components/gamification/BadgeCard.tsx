@@ -11,9 +11,9 @@ interface BadgeCardProps {
 const BadgeCard: React.FC<BadgeCardProps> = ({ badge, earned }) => {
   return (
     <div className={`!p-4 border rounded-lg flex items-center !space-x-3 ${earned ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 opacity-60'}`}>
-      {badge.imageUrl && (
+      {badge.image_url && (
         <div className="flex-shrink-0">
-          <Image src={badge.imageUrl} alt={`${badge.name} icon`} width={50} height={50} className="rounded-md" />
+          <Image src={badge.image_url} alt={`${badge.name} icon`} width={50} height={50} className="rounded-md" />
         </div>
       )}
       <div>
