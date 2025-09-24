@@ -72,9 +72,8 @@ export default async function ProjectDetailsPage({ params }: { params: ParamsPro
   );
 }
 
-// Função auxiliar fora do export
 async function fetchProject(id: string): Promise<Project | null> {
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host');
   const protocol = headersList.get('x-forwarded-proto') ?? (process.env.NODE_ENV === 'production' ? 'https' : 'http');
 
@@ -83,10 +82,10 @@ async function fetchProject(id: string): Promise<Project | null> {
     return null;
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookieHeader = cookieStore
     .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
+    .map(({ name, value }: { name: string; value: string }) => `${name}=${value}`)
     .join('; ');
 
   const response = await fetch(`${protocol}://${host}/api/projects/${id}`, {
