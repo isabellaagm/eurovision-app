@@ -1,13 +1,7 @@
-// src/app/api/projects/route.ts
+// src/app/api/projects/[id]/route.ts
 import { NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-
-// Função para criar um cliente Supabase do lado do servidor
-type SupabaseCookieStore = {
-  get(name: string): { value: string } | undefined;
-  set(options: { name: string; value: string } & CookieOptions): void;
-};
 
 async function createSupabaseServerClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -18,7 +12,7 @@ async function createSupabaseServerClient() {
     return null;
   }
 
-  const cookieStore = (await cookies()) as unknown as SupabaseCookieStore;
+  const cookieStore = await cookies();
   return createServerClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -31,90 +25,121 @@ async function createSupabaseServerClient() {
           cookieStore.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: '', ...options });
+          cookieStore.set({ name, value: "", ...options });
         },
       },
     }
   );
 }
 
-// GET: Listar todos os projetos (respeitando RLS)
-export async function GET() {
+// GET: Buscar um projeto específico por ID
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
   }
+  const projectId = params.id;
+
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
     }
 
-    // A RLS no Supabase já filtra os projetos com base nas permissões.
-    // O select busca o projeto e os dados do usuário que o modificou por último.
-    const { data: projects, error: projectsError } = await supabase
+    const {
+      data: project,
+      error: projectError,
+    } = await supabase
       .from("projects")
       .select(`
-        id, 
+        id,
         name, 
         description, 
         status, 
         gerencia, 
         created_at, 
         last_modified_by_user_id, 
-        users (full_name, avatar_url)
+        users (full_name, avatar_url), 
+        project_participants (user_id, users(full_name, avatar_url, job_title))
       `)
-      .order('created_at', { ascending: false }); // Exemplo de ordenação
+      .eq("id", projectId)
+      .single();
 
-    if (projectsError) {
-      console.error("Erro ao buscar projetos:", projectsError);
+    if (projectError) {
+      if (projectError.code === 'PGRST116') { // Recurso não encontrado
+        return NextResponse.json({ error: "Projeto não encontrado." }, { status: 404 });
+      }
+      console.error(`Erro ao buscar projeto ${projectId}:`, projectError);
       return NextResponse.json(
-        { error: projectsError.message || "Falha ao buscar projetos." },
+        { error: projectError.message || "Falha ao buscar projeto." },
         { status: 500 }
       );
     }
-    return NextResponse.json({ projects });
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Projeto não encontrado." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ project });
+
   } catch (err: unknown) {
-    console.error("Erro inesperado na API de projetos (GET):", err);
+    console.error(`Erro inesperado na API do projeto ${projectId} (GET):`, err);
     const message = err instanceof Error ? err.message : "Erro interno do servidor.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-// POST: Criar um novo projeto
-export async function POST(request: Request) {
+// PUT: Atualizar um projeto específico
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
   }
+  const projectId = params.id;
+
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: "Usuário não autenticado para criar projeto." }, { status: 401 });
+      return NextResponse.json({ error: "Usuário não autenticado para atualizar projeto." }, { status: 401 });
     }
+
+    // Verificar se o usuário é participante do projeto (RLS deve cuidar disso, mas uma verificação extra pode ser útil)
+    // A política de RLS "Allow project participants to update project" já faz essa checagem.
 
     const body = await request.json();
     const { name, description, status, gerencia } = body;
 
-    if (!name) {
+    // Validar dados de entrada
+    if (!name && !description && !status && !gerencia) {
       return NextResponse.json(
-        { error: "Nome do projeto é obrigatório." },
+        { error: "Nenhum dado fornecido para atualização." },
         { status: 400 }
       );
     }
 
-    // last_modified_by_user_id será preenchido pelo user.id ou pelo trigger no Supabase.
-    const { data: newProject, error: insertError } = await supabase
+    const updateData: Partial<{ name: string; description: string; status: string; gerencia: string }> = {};
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (status) updateData.status = status;
+    if (gerencia) updateData.gerencia = gerencia;
+    // O trigger on_projects_before_update_set_last_modified cuidará de last_modified_by_user_id
+
+    const {
+      data: updatedProject,
+      error: updateError,
+    } = await supabase
       .from("projects")
-      .insert([
-        {
-          name,
-          description,
-          status: status || "Ideia", // Status padrão
-          gerencia,
-          last_modified_by_user_id: user.id // O criador é o último a modificar inicialmente
-        },
-      ])
+      .update(updateData)
+      .eq("id", projectId)
       .select(`
         id, 
         name, 
@@ -122,41 +147,79 @@ export async function POST(request: Request) {
         status, 
         gerencia, 
         created_at, 
+        updated_at, 
         last_modified_by_user_id,
         users (full_name, avatar_url)
       `)
-      .single(); // .single() é usado porque estamos inserindo um único registro e esperando um único de volta.
+      .single();
 
-    if (insertError) {
-      console.error("Erro ao criar projeto:", insertError);
-      if (insertError.code === '23505') { // unique_violation (ex: se nome do projeto for único)
-        return NextResponse.json(
-            { error: "Erro de duplicação. Um projeto com este nome já pode existir." }, 
-            { status: 409 }
-        );
+    if (updateError) {
+      console.error(`Erro ao atualizar projeto ${projectId}:`, updateError);
+      // A RLS pode retornar um erro se o usuário não tiver permissão, resultando em 0 linhas atualizadas.
+      // O Supabase pode retornar um erro com code PGRST116 (Not Found) se o update não afetar linhas devido a RLS ou ID inexistente.
+      if (
+        updateError.code === "PGRST116" ||
+        (updateError.details && updateError.details.includes("0 rows"))
+      ) {
+        return NextResponse.json({ error: "Projeto não encontrado ou permissão negada para atualizar." }, { status: 404 });
       }
       return NextResponse.json(
-        { error: insertError.message || "Falha ao criar projeto." },
+        { error: updateError.message || "Falha ao atualizar projeto." },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json({ project: updatedProject });
+  } catch (err: unknown) {
+    console.error(`Erro inesperado na API do projeto ${projectId} (PUT):`, err);
+    const message = err instanceof Error ? err.message : "Erro interno do servidor.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// DELETE: Excluir um projeto específico
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  }
+  const projectId = params.id;
+
+  try {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Usuário não autenticado para excluir projeto." }, { status: 401 });
+    }
+
+    // A política de RLS "Allow managers or leaders to delete projects" cuidará da permissão.
+    // Precisamos garantir que o job_title do usuário seja obtido e usado pela função get_my_job_title() no Supabase.
+
+    const { error: deleteError, count } = await supabase
+      .from("projects")
+      .delete({ count: 'exact' })
+      .eq("id", projectId);
+
+    if (deleteError) {
+      console.error(`Erro ao excluir projeto ${projectId}:`, deleteError);
+      return NextResponse.json(
+        { error: deleteError.message || "Falha ao excluir projeto." },
         { status: 500 }
       );
     }
 
-    // Adicionar o criador como participante do projeto automaticamente
-    if (newProject) {
-        const { error: participantError } = await supabase
-            .from("project_participants")
-            .insert({ project_id: newProject.id, user_id: user.id });
-        
-        if (participantError) {
-            // Logar o erro, mas não necessariamente falhar a criação do projeto por isso.
-            console.warn("Falha ao adicionar criador como participante do projeto:", participantError.message);
-        }
+    if (count === 0) {
+      return NextResponse.json(
+        { error: "Projeto não encontrado ou permissão negada para excluir." },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ project: newProject }, { status: 201 });
+    return NextResponse.json({ message: "Projeto excluído com sucesso." }, { status: 200 }); // Ou 204 No Content
 
   } catch (err: unknown) {
-    console.error("Erro inesperado na API de projetos (POST):", err);
+    console.error(`Erro inesperado na API do projeto ${projectId} (DELETE):`, err);
     const message = err instanceof Error ? err.message : "Erro interno do servidor.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
