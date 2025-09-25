@@ -33,12 +33,15 @@ async function createSupabaseServerClient() {
 }
 
 // GET: Buscar um projeto específico por ID
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _request: Request, 
+  context: { params: { id: string } }
+) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
   }
-  const projectId = params.id;
+  const projectId = context.params.id;
 
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -93,12 +96,15 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 }
 
 // PUT: Atualizar um projeto específico
-export async function PUT(_request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  _request: Request, 
+  context: { params: { id: string } }
+) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
   }
-  const projectId = params.id;
+  const projectId = context.params.id;
 
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -171,15 +177,18 @@ export async function PUT(_request: Request, { params }: { params: { id: string 
 }
 
 // DELETE: Excluir um projeto específico
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _request: Request, 
+  context: { params: { id: string } }
+) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
   }
-  const projectId = params.id;
+  const projectId = context.params.id;
 
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: //////////////////{ user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Usuário não autenticado para excluir projeto." }, { status: 401 });
     }
