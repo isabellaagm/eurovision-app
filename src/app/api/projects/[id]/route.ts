@@ -1,3 +1,4 @@
+// Forçando um novo build em 25/09/2025 20:18
 import { NextResponse } from "next/server";
 import {
   fetchProjectById,
