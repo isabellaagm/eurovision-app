@@ -1,25 +1,70 @@
+
 @import "tailwindcss";
-/* src/app/globals.css */
-@import "tailwindcss/preflight"; /* Diretiva base do Tailwind v4 */
-@tailwind utilities; /* Diretiva de utilitários do Tailwind v4 */
+@config "../../tailwind.config.ts";
 
-:root {
-  /* Você pode definir variáveis de cor globais aqui se desejar */
-  /* Exemplo: --primary-color: 0 123 255; */
+@layer base {
+  :root {
+    --color-eurofarma-blue: #0033a0;
+    --color-eurofarma-yellow: #ffcb05;
+    --color-light-grey: #f2f2f2;
+    --color-light-black: #1a1a1a;
+  }
+
+  body {
+    @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
+    background-image:
+      radial-gradient(120% 120% at 10% 10%, rgba(76, 106, 255, 0.18) 0%, rgba(8, 13, 40, 0) 55%),
+      radial-gradient(110% 110% at 90% 0%, rgba(0, 204, 255, 0.16) 0%, rgba(5, 6, 17, 0) 60%),
+      linear-gradient(160deg, #080b1c 0%, #030712 100%);
+    background-attachment: fixed;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
 }
 
-body {
-  /* Estilos básicos para o body */
-  @apply text-gray-800 bg-gray-50;
-}
-
-/* Opcional: Defina classes de componentes reutilizáveis aqui */
 @layer components {
+  /* Suas classes de componentes personalizadas */
   .card {
-    @apply bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow;
+    @apply relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
   }
+
   .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors;
+    @apply rounded-full bg-[--color-eurofarma-blue] px-5 py-2 text-white transition-colors hover:bg-blue-700;
   }
-  /* Adicione outras classes base conforme necessário */
+
+  .btn-secondary {
+    @apply rounded-full border border-[--color-eurofarma-blue] px-5 py-2 font-medium text-[--color-eurofarma-blue] transition-colors hover:bg-[--color-eurofarma-blue] hover:text-white;
+  }
+
+  .page-shell {
+    @apply relative mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 pb-24 pt-8 sm:px-10 lg:px-16;
+  }
+
+  .glass-panel {
+    border-radius: 32px;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.04) 100%);
+    box-shadow: 0 32px 80px -32px rgba(30, 64, 175, 0.75);
+    @apply relative overflow-hidden border border-white/12 p-10 backdrop-blur-2xl;
+  }
+
+  .surface-panel {
+    border-radius: 28px;
+    box-shadow: 0 28px 70px -35px rgba(15, 23, 42, 0.45);
+    @apply relative overflow-hidden border border-white/15 bg-white/95 p-10 text-slate-900;
+  }
+
+  .surface-panel::before {
+    content: "";
+    background: color-mix(in srgb, rgba(0, 51, 160, 0.55) 40%, transparent);
+    @apply pointer-events-none absolute -right-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full blur-3xl;
+  }
+
+  .page-shell::before {
+    content: "";
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    @apply pointer-events-none absolute inset-x-0 top-0 h-px;
+  }
 }
+

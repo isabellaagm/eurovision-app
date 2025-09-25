@@ -4,32 +4,37 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-md !p-5">
-      <nav className="container mx-auto flex justify-between items-center">
-        {/* Logo/Título */}
-        <Link href="/" className="text-2xl font-bold !text-blue-700">
-          EuroVision
+    <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
+      {/* ALTURA DEFINITIVA: h-20 (80px) */}
+      <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 sm:px-10 lg:px-16">
+        <Link
+          href="/"
+          className="flex flex-shrink-0 items-center gap-3 text-xl font-semibold text-white"
+        >
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[--color-eurofarma-blue] text-white">
+            EV
+          </span>
+          <span className="hidden sm:inline">EuroVision</span>
         </Link>
 
-        {/* Links de Navegação */}
-        <div className="flex gap-x-4">
-          <Link
-            href="/dashboard"
-            className="text-gray-600 hover:text-blue-700 transition-colors"
-          >
+        <div className="flex items-center gap-6 text-sm font-medium text-white/80">
+          <Link href="/dashboard" className="transition hover:text-white">
             Dashboard
           </Link>
-          <Link
-            href="/projects"
-            className="text-gray-600 hover:text-blue-700 transition-colors"
-          >
+          <Link href="/projects" className="transition hover:text-white">
             Projetos
           </Link>
+          <Link href="/gamification" className="transition hover:text-white">
+            Trilhas
+          </Link>
+          <Link href="/requests" className="transition hover:text-white">
+            Pedir solução
+          </Link>
           <Link
-            href="/requests"
-            className="text-blue-600 font-medium hover:underline"
+            href="/auth/login"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
           >
-            Pedir Solução
+            Entrar
           </Link>
         </div>
       </nav>
@@ -38,3 +43,4 @@ const Header = () => {
 };
 
 export default Header;
+

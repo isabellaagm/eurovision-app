@@ -1,7 +1,7 @@
 // src/components/RequestSolutionForm.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function RequestSolutionForm() {
   const [title, setTitle] = useState('')
@@ -28,14 +28,26 @@ export default function RequestSolutionForm() {
     }
   }
 
+  useEffect(() => {
+    if (status !== 'success') {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setStatus('idle')
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [status])
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-2xl !mx-auto bg-white shadow-lg rounded-lg !p-8 !space-y-6"
+      className="mx-auto w-full max-w-2xl space-y-6 rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur"
     >
-      <h2 className="text-2xl font-semibold text-gray-800">Solicitar Nova Solução</h2>
+      <h2 className="text-2xl font-semibold text-slate-900">Solicitar Nova Solução</h2>
 
-      <div className="grid grid-cols-1 !gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Título
@@ -46,7 +58,7 @@ export default function RequestSolutionForm() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="!mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
           />
         </div>
         <div>
@@ -59,7 +71,7 @@ export default function RequestSolutionForm() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="!mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
           />
         </div>
         <div>
@@ -72,7 +84,7 @@ export default function RequestSolutionForm() {
             value={gerencia}
             onChange={(e) => setGerencia(e.target.value)}
             required
-            className="!mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
           />
         </div>
       </div>
@@ -81,11 +93,11 @@ export default function RequestSolutionForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="inline-flex items-center !px-6 !py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-full bg-[--color-eurofarma-blue] px-6 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === 'loading' ? (
             <svg
-              className="animate-spin h-5 w-5 !mr-2 text-white"
+              className="h-5 w-5 animate-spin text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -110,10 +122,10 @@ export default function RequestSolutionForm() {
       </div>
 
       {status === 'success' && (
-        <p className="text-green-600 text-center">Solicitação enviada com sucesso!</p>
+        <p className="text-center text-emerald-600">Solicitação enviada com sucesso!</p>
       )}
       {status === 'error' && (
-        <p className="text-red-600 text-center">Erro ao enviar solicitação. Tente novamente.</p>
+        <p className="text-center text-red-600">Erro ao enviar solicitação. Tente novamente.</p>
       )}
     </form>
   )

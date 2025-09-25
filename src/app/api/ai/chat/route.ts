@@ -17,6 +17,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prompt não fornecido.' }, { status: 400 })
     }
 
+    if (!OPENROUTER_API_KEY) {
+      console.error('OPENROUTER_API_KEY não configurada.')
+      return NextResponse.json(
+        { error: 'Configuração ausente da chave de API. Contate o administrador.' },
+        { status: 500 }
+      )
+    }
+
     // Monta um system prompt que inclui seus dados mockados
     const systemPrompt = `
 Você é o assistente EuroVision AI. Use APENAS as informações abaixo para responder de forma concisa.
