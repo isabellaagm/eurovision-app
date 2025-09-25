@@ -33,10 +33,7 @@ async function createSupabaseServerClient() {
 }
 
 // GET: Buscar um projeto específico por ID
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
@@ -96,10 +93,7 @@ export async function GET(
 }
 
 // PUT: Atualizar um projeto específico
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(_request: Request, { params }: { params: { id: string } }) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
@@ -115,7 +109,7 @@ export async function PUT(
     // Verificar se o usuário é participante do projeto (RLS deve cuidar disso, mas uma verificação extra pode ser útil)
     // A política de RLS "Allow project participants to update project" já faz essa checagem.
 
-    const body = await request.json();
+    const body = await _request.json();
     const { name, description, status, gerencia } = body;
 
     // Validar dados de entrada
@@ -177,10 +171,7 @@ export async function PUT(
 }
 
 // DELETE: Excluir um projeto específico
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
