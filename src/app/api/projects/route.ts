@@ -188,7 +188,7 @@ export async function DELETE(
   const projectId = context.params.id;
 
   try {
-    const { data: //////////////////{ user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Usuário não autenticado para excluir projeto." }, { status: 401 });
     }
