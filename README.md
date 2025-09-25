@@ -1,19 +1,3 @@
-# EuroVision App
-
-## Getting Started
-Aplicação Next.js que centraliza iniciativas de inovação, métricas executivas e recursos de engajamento/gamificação.
-
-## Pré-requisitos
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 1. **Node.js 20+** – utilize o mesmo runtime usado pelo Next.js 15.
 2. **pnpm** – o projeto usa pnpm para gerenciar dependências (`corepack enable pnpm`).
 
@@ -38,6 +22,9 @@ pnpm lint             # executa as regras de lint (recomendado antes de enviar a
 ```
 
 ## Fontes de dados
+
+- O arquivo [`supabase/schema.sql`](supabase/schema.sql) consolida o modelo operacional e analítico sugerido (usuários, portfólio, gamificação e fatos dimensionais) e pode ser aplicado com `supabase db push`.
+- As rotas de projetos (`/api/projects` e `/api/projects/[id]`) agora fazem fallback automático para os mocks sempre que o Supabase não estiver configurado ou o usuário não possuir sessão válida, permitindo navegação local sem infraestrutura.
 
 ## Learn More
 ### Projetos

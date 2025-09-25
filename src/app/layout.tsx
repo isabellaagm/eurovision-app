@@ -21,9 +21,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <Header /> {/* Adiciona o Header aqui */} 
-        <main className="p-4 md:p-6">
-          {children} {/* Conteúdo da página será renderizado aqui */} 
+        <Header /> {/* Adiciona o Header aqui */}
+        <main className="min-h-screen bg-gray-50">
+          {children} {/* Conteúdo da página será renderizado aqui */}
         </main>
         {/* Poderíamos adicionar um Footer aqui no futuro */}
         <ChatWidget isConfigured={isChatConfigured} />

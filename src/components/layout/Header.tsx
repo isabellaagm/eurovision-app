@@ -4,38 +4,48 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-md !p-5">
-      <nav className="container !mx-auto flex justify-between items-center">
-        {/* Logo/Título */}
-        <Link href="/" className="text-2xl font-bold text-eurofarma-blue">
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-2xl font-semibold text-[--color-eurofarma-blue]"
+        >
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[--color-eurofarma-blue] text-white">
+            EV
+          </span>
           EuroVision
         </Link>
 
-        {/* Links de Navegação */}
-        <div className="flex !gap-x-4">
+        <div className="flex items-center gap-6 text-sm font-medium text-[--color-light-black]">
           <Link
             href="/dashboard"
-            className="text-light-black !hover:text-eurofarma-blue transition-colors"
+            className="transition hover:text-[--color-eurofarma-blue]"
           >
             Dashboard
           </Link>
           <Link
             href="/projects"
-            className="text-light-black hover:text-eurofarma-blue transition-colors"
+            className="transition hover:text-[--color-eurofarma-blue]"
           >
             Projetos
           </Link>
           <Link
             href="/gamification"
-            className="text-gray-600 hover:text-blue-700 transition-colors"
+            className="transition hover:text-[--color-eurofarma-blue]"
           >
             Trilhas
           </Link>
           <Link
             href="/requests"
-            className="text-eurofarma-blue font-medium !hover:underline"
+            className="transition hover:text-[--color-eurofarma-blue]"
           >
-            Pedir Solução
+            Pedir solução
+          </Link>
+          <Link
+            href="/auth/login"
+            className="rounded-full border border-[--color-eurofarma-blue] px-4 py-2 text-[--color-eurofarma-blue] transition hover:bg-[--color-eurofarma-blue] hover:text-white"
+          >
+            Entrar
           </Link>
         </div>
       </nav>
