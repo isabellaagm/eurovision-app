@@ -29,45 +29,60 @@ export default async function ProjectDetailsPage({ params }: { params: ParamsPro
     .filter((name): name is string => Boolean(name));
 
   return (
-    <div className="space-y-6 max-w-4xl !mx-5">
-      <Link href="/projects" className="text-blue-600 hover:underline !my-4 inline-block">
+    <div className="page-shell">
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white"
+      >
         &larr; Voltar ao Catálogo
       </Link>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 !pb-4 border-b">
-        <h2 className="text-3xl font-semibold flex-1 break-words">{project.name}</h2>
-        <span 
-          className={`text-sm font-medium !px-3 !py-1 rounded-full whitespace-nowrap ${getStatusBadgeColor(project.status)}`}
-        >
-          Status: {statusLabel}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 !gap-x-8 !gap-y-4">
-        <DetailItem label="ID do Projeto" value={project.id} />
-        <DetailItem label="Gerência Responsável" value={gerencia} />
-        <DetailItem label="Criado em" value={createdAt} />
-        <DetailItem label="Última atualização" value={updatedAt} />
-        {lastUpdatedBy && <DetailItem label="Última modificação por" value={lastUpdatedBy} />}
-      </div>
-
-       {participants.length > 0 && (
-        <div className="!pt-4 border-t">
-          <h3 className="text-xl font-semibold !mb-2">Participantes</h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-1">
-            {participants.map((participant) => (
-              <li key={participant}>{participant}</li>
-            ))}
-          </ul>
+      <section className="glass-panel text-white">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.24em] text-white/70">Detalhes do projeto</p>
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{project.name}</h1>
+          </div>
+          <span
+            className={`rounded-full px-4 py-2 text-sm font-semibold ${getStatusBadgeColor(project.status)}`}
+          >
+            Status: {statusLabel}
+          </span>
         </div>
-      )}
+        <p className="mt-4 max-w-3xl text-sm text-white/70">
+          Gerência responsável: {gerencia}
+        </p>
+      </section>
 
-      {project.description && (
-        <div className="!pt-4 border-t">
-          <h3 className="text-xl font-semibold !mb-2">Descrição</h3>
-          <p className="text-gray-700 whitespace-pre-wrap">{project.description}</p>
+      <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <DetailItem label="ID do Projeto" value={project.id} />
+          <DetailItem label="Gerência Responsável" value={gerencia} />
+          <DetailItem label="Criado em" value={createdAt} />
+          <DetailItem label="Última atualização" value={updatedAt} />
+          {lastUpdatedBy && <DetailItem label="Última modificação por" value={lastUpdatedBy} />}
         </div>
-      )}
+
+        {participants.length > 0 ? (
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <h3 className="text-xl font-semibold text-slate-900">Participantes</h3>
+            <ul className="mt-3 space-y-1 text-sm text-slate-600">
+              {participants.map((participant) => (
+                <li key={participant}>{participant}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {project.description ? (
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <h3 className="text-xl font-semibold text-slate-900">Descrição</h3>
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+              {project.description}
+            </p>
+          </div>
+        ) : null}
+      </section>
     </div>
   );
 }

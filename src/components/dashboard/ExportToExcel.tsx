@@ -24,16 +24,7 @@ export function ExportToExcel<T extends object>({
   return (
     <button
       onClick={handleExport}
-      className="
-        !mt-4 inline-flex items-center !space-x-2
-        bg-gradient-to-r from-green-400 to-blue-500
-        hover:from-green-500 hover:to-blue-600
-        text-white font-semibold
-        !px-4 !py-2 rounded-lg shadow-md
-        transition-all duration-300 ease-in-out transform
-        hover:shadow-lg hover:scale-105
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300
-      "
+      className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/30 bg-gradient-to-r from-[--color-eurofarma-blue] via-sky-600 to-emerald-400 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_20px_45px_-25px_rgba(56,189,248,0.6)] transition-transform duration-300 ease-out hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-emerald-300/70 focus:ring-offset-2 focus:ring-offset-slate-900"
     >
       Exportar para Excel
     </button>

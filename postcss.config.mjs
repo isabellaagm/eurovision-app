@@ -1,6 +1,10 @@
-export default {
+/** @type {import('postcss').Config} */
+const config = {
   plugins: {
-    '@tailwindcss/postcss': {},
+    // Esta é a correção. O nome correto do plugin é 'tailwindcss'.
+    tailwindcss: {},
     autoprefixer: {},
   },
 };
+
+export default config;

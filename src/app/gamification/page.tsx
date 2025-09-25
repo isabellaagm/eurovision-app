@@ -1,44 +1,49 @@
 // src/app/gamification/page.tsx
-import React from 'react';
-import TrailCard from '@/components/gamification/TrailCard';
-import UserProfileGamification from '@/components/gamification/UserProfileGamification';
-import { mockInnovationTrails, mockUserGamificationProgress, mockUser, mockBadges } from '@/lib/mockData';
+import React from "react";
+import TrailCard from "@/components/gamification/TrailCard";
+import UserProfileGamification from "@/components/gamification/UserProfileGamification";
+import { mockInnovationTrails, mockUserGamificationProgress, mockUser, mockBadges } from "@/lib/mockData";
 // import Link from 'next/link'; // Removido pois não está sendo usado
 
 export default function GamificationPage() {
   return (
-    <div className="!p-6">
-      <h2 className="text-3xl font-semibold !mb-6">Central de Gamificação</h2>
+    <div className="page-shell">
+      <section className="glass-panel text-white">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <p className="text-sm uppercase tracking-[0.24em] text-white/70">
+              Engajamento
+            </p>
+            <h1 className="text-3xl font-semibold sm:text-4xl">
+              Central de Gamificação
+            </h1>
+            <p className="text-base text-white/70">
+              Reconheça conquistas, acompanhe o progresso das squads e incentive práticas colaborativas que aceleram a inovação.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* Seção do Perfil de Gamificação do Usuário */}
-      <div className="!mb-8">
-        <UserProfileGamification 
-          user={mockUser} 
-          progress={mockUserGamificationProgress} 
-          allBadges={mockBadges} 
-        />
-      </div>
+      <UserProfileGamification
+        user={mockUser}
+        progress={mockUserGamificationProgress}
+        allBadges={mockBadges}
+      />
 
-      {/* Seção de Trilhas de Inovação */}
-      <div>
-        <h3 className="text-2xl font-semibold !mb-4">Trilhas de Inovação Disponíveis</h3>
+      <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
+        <h2 className="text-2xl font-semibold">Trilhas de Inovação Disponíveis</h2>
         {mockInnovationTrails.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockInnovationTrails.map(trail => (
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {mockInnovationTrails.map((trail) => (
               <TrailCard key={trail.id} trail={trail} />
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">Nenhuma trilha de inovação disponível no momento.</p>
+          <p className="mt-4 text-sm text-slate-600">
+            Nenhuma trilha de inovação disponível no momento.
+          </p>
         )}
-      </div>
-
-      {/* Link para adicionar ao Header depois */}
-      {/* <div className="mt-8">
-        <Link href="/dashboard" className="text-blue-600 hover:underline">
-          &larr; Voltar para o Dashboard
-        </Link>
-      </div> */}
+      </section>
     </div>
   );
 }

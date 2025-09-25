@@ -50,7 +50,7 @@ export default function ProjectsPage() {
     return ["All", ...Array.from(new Set(allProjects.map((p) => p.status).filter(isNonNullable)))];
   }, [allProjects, isLoading, error]);
 
-  const gerencias = useMemo(() => {
+ const gerencias = useMemo(() => {
     if (isLoading || error) return ["All"];
     return ["All", ...Array.from(new Set(allProjects.map((p) => p.gerencia).filter(isNonNullable)))];
   }, [allProjects, isLoading, error]);
@@ -74,69 +74,91 @@ export default function ProjectsPage() {
   }, [allProjects, searchTerm, statusFilter, gerenciaFilter, isLoading, error]);
 
   if (isLoading) {
-    return <p className="!p-6 text-center">Carregando projetos...</p>;
+    return (
+      <div className="page-shell">
+        <section className="glass-panel text-center text-white">
+          Carregando projetos...
+        </section>
+      </div>
+    );
   }
 
   if (error) {
-    return <p className="!p-6 text-center text-red-500">Erro: {error}</p>;
+    return (
+      <div className="page-shell">
+        <section className="glass-panel text-center text-red-200">
+          Erro: {error}
+        </section>
+      </div>
+    );
   }
 
   return (
-    <div className="!space-y-6">
-      <div className="!m-6 flex justify-between items-center">
-        <h2 className="text-3xl font-semibold">Catálogo de Projetos</h2>
-        {/* TODO: Adicionar botão para criar novo projeto que leve a um formulário/modal */}
-      </div>
+    <div className="page-shell">
+      <section className="glass-panel text-white">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <p className="text-sm uppercase tracking-[0.24em] text-white/70">
+              Portfólio estratégico
+            </p>
+            <h1 className="text-3xl font-semibold sm:text-4xl">
+              Catálogo de Projetos
+            </h1>
+            <p className="text-base text-white/70">
+              Explore o pipeline completo de iniciativas e refine a busca por status, gerência ou palavra-chave.
+            </p>
+          </div>
+        </div>
+        <p className="mt-6 text-sm text-white/70">
+          {filteredProjects.length} projeto
+          {filteredProjects.length === 1 ? "" : "s"} em exibição.
+        </p>
+      </section>
 
-      <div className="bg-white !p-4 !m-6 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <input
-          type="text"
-          placeholder="Buscar por nome..."
-          className="border !p-2 rounded w-full"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="border !p-2 rounded w-full"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border !p-2 rounded w-full"
-          value={gerenciaFilter}
-          onChange={(e) => setGerenciaFilter(e.target.value)}
-        >
-          {gerencias.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
-        {/* Filtros de data removidos temporariamente */}
-      </div>
-
-      <p className="!m-6 text-sm text-gray-600">
-        {filteredProjects.length} projeto
-        {filteredProjects.length === 1 ? "" : "s"} encontrado
-        {filteredProjects.length === 1 ? "" : "s"}
-      </p>
+      <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <input
+            type="text"
+            placeholder="Buscar por nome..."
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            {statuses.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <select
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            value={gerenciaFilter}
+            onChange={(e) => setGerenciaFilter(e.target.value)}
+          >
+            {gerencias.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
 
       {filteredProjects.length > 0 ? (
-        <div className="!m-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
-        </div>
+        </section>
       ) : (
-        <p className="text-gray-500 text-center !mt-10">
+        <section className="glass-panel text-center text-white/80">
           Nenhum projeto encontrado com os filtros atuais.
-        </p>
+        </section>
       )}
     </div>
   );

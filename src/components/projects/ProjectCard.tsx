@@ -42,17 +42,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const statusLabel = project.status ?? "Sem status";
 
   return (
-    <Link href={`/projects/${project.id}`} className="!p-3 block card hover:border-blue-500 border border-transparent transition-colors duration-200">
+    <Link
+      href={`/projects/${project.id}`}
+      className="block h-full rounded-2xl border border-transparent bg-white/90 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[--color-eurofarma-blue]/40 hover:shadow-2xl"
+    >
       {/* Usando Link para tornar o card clicável e navegar para os detalhes */}
-      <div className="flex justify-between items-start !mb-2">
+      <div className="mb-3 flex items-start justify-between">
         <h3 className="text-lg font-semibold truncate" title={project.name}>{project.name}</h3>
-        <span 
-          className={`text-xs font-medium !px-2.5 !py-0.5 rounded-full ${getStatusBadgeColor(project.status)}`}
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeColor(project.status)}`}
         >
           {statusLabel}
         </span>
       </div>
-      <p className="text-sm text-gray-600 !mb-2">Gerência: {gerencia}</p>
+      <p className="mb-3 text-sm text-gray-600">Gerência: {gerencia}</p>
       <p className="text-sm text-gray-500">Criado em: {createdAtLabel}</p>
       {updatedAtLabel && (
         <p className="text-sm text-gray-500">Atualizado em: {updatedAtLabel}</p>

@@ -46,13 +46,18 @@ export default async function HomePage() {
   const gerenciaHighlights = projectSummary.byGerencia.slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <section className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16">
+    // CORREÇÃO:
+    // O container principal da página agora só define a largura e os paddings laterais,
+    // para alinhar com o Header. O espaçamento do topo é herdado do layout.tsx.
+    <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16">
+      <div className="flex flex-col gap-16">
+        {/* Hero Section */}
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/40 via-purple-600/30 to-slate-900 p-10 shadow-2xl">
           <div className="absolute -top-20 -right-10 h-64 w-64 rounded-full bg-indigo-500/40 blur-3xl" />
           <div className="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-purple-500/30 blur-3xl" />
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-xl">
+
+          <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+            <div className="max-w-xl flex-shrink-0">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-sm font-medium">
                 <Sparkles className="h-4 w-4" />
                 Plataforma estratégica de inovação
@@ -79,12 +84,10 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="grid w-full max-w-md grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-6">
+
+            <div className="mt-8 grid w-full max-w-md flex-shrink-0 grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-6 lg:mt-0">
               {metrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="rounded-xl bg-white/10 p-4 text-left shadow-inner"
-                >
+                <div key={metric.label} className="flex flex-col rounded-xl bg-white/10 p-4 text-left shadow-inner">
                   <p className="text-sm uppercase tracking-wide text-white/60">
                     {metric.label}
                   </p>
@@ -98,6 +101,7 @@ export default async function HomePage() {
           </div>
         </div>
 
+        {/* Quick Links Section */}
         <section className="grid gap-6 lg:grid-cols-2">
           {quickLinks.map(({ href, title, description, icon: Icon }) => (
             <Link
@@ -105,7 +109,7 @@ export default async function HomePage() {
               href={href}
               className="group relative flex items-start gap-4 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/70 p-6 transition hover:border-indigo-400/60 hover:bg-slate-900"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-200">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-200">
                 <Icon className="h-6 w-6" />
               </div>
               <div className="flex-1">
@@ -122,17 +126,19 @@ export default async function HomePage() {
           ))}
         </section>
 
+        {/* Bottom Sections */}
         <section className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+          {/* Status do Portfólio */}
           <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">Status do portfólio</h3>
               <span className="text-sm text-white/60">Top 3 categorias</span>
             </div>
-            <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+            <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {statusHighlights.map((item) => (
-                <div key={item.name} className="rounded-xl bg-white/5 p-4">
+                <div key={item.name} className="flex flex-col rounded-xl bg-white/5 p-4">
                   <dt className="text-sm text-white/60">{item.name}</dt>
-                  <dd className="mt-2 text-2xl font-semibold text-white">{item.value}</dd>
+                  <dd className="mt-2 flex flex-grow items-end text-2xl font-semibold text-white">{item.value}</dd>
                 </div>
               ))}
             </dl>
@@ -140,13 +146,15 @@ export default async function HomePage() {
               Aproveite a visão executiva para monitorar gargalos e realocar investimentos conforme o ritmo de entrega.
             </p>
           </div>
+
+          {/* Engajamento por Gerência */}
           <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-6">
             <h3 className="text-lg font-semibold text-white">Engajamento por gerência</h3>
             <ul className="mt-6 space-y-4">
               {gerenciaHighlights.map((item, index) => (
                 <li key={item.name} className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/30 text-sm font-semibold text-indigo-100">
+                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/30 text-sm font-semibold text-indigo-100">
                       {index + 1}
                     </span>
                     <span className="text-sm font-medium text-white">{item.name}</span>
@@ -160,7 +168,8 @@ export default async function HomePage() {
             </p>
           </div>
         </section>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
+

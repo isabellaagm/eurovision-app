@@ -78,66 +78,114 @@ export default function TrailDetailPage() {
     }
   };
 
-  if (isLoading) return <p className="!p-6 text-center">Carregando detalhes da trilha...</p>;
-  if (error) return <p className="!p-6 text-center text-red-500">Erro: {error}</p>;
-  if (!trail) return <p className="!p-6 text-center">Trilha não encontrada.</p>;
+  if (isLoading)
+    return (
+      <div className="page-shell">
+        <section className="glass-panel text-center text-white">
+          Carregando detalhes da trilha...
+        </section>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="page-shell">
+        <section className="glass-panel text-center text-red-200">Erro: {error}</section>
+      </div>
+    );
+  if (!trail)
+    return (
+      <div className="page-shell">
+        <section className="glass-panel text-center text-white/80">
+          Trilha não encontrada.
+        </section>
+      </div>
+    );
 
   const stages = trail.stages ?? [];
 
   return (
-    <div className="!p-6">
-      <Link href="/gamification" className="text-blue-600 hover:underline !mb-6 inline-block">
+    <div className="page-shell">
+      <Link
+        href="/gamification"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white"
+      >
         &larr; Voltar para a Central de Gamificação
       </Link>
 
-      <div className="bg-white !p-8 rounded-lg shadow-lg !mb-8">
-        <div className="flex items-center !mb-4">
-          {trail.icon_url && (
-            <div className="!mr-4 flex-shrink-0">
-              <Image src={trail.icon_url} alt={`${trail.name} icon`} width={60} height={60} className="rounded-full" />
-            </div>
-          )}
-          <h2 className="text-3xl font-bold text-gray-800">{trail.name}</h2>
-        </div>
-        <p className="text-gray-600 !mb-6">{trail.description}</p>
-      </div>
-
-      <h3 className="text-2xl font-semibold !mb-4">Etapas da Trilha</h3>
-      {stages.length > 0 ? (
-        <div className="!space-y-4">
-          {stages.map((stage, index) => {
-            const isCompleted = userProgress?.completed_stage_ids.includes(stage.id);
-            const badgeToAward = stage.badge_id_to_award ? mockBadges.find(b => b.id === stage.badge_id_to_award) : null;
-            return (
-              <div key={stage.id} className={`!p-5 rounded-md border ${isCompleted ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"}`}>
-                <h4 className={`text-xl font-semibold ${isCompleted ? "text-green-700" : "text-gray-800"}`}>
-                  Etapa {index + 1}: {stage.name} {isCompleted && "(Concluída)"}
-                </h4>
-                <p className="text-gray-600 !my-2">{stage.description}</p>
-                <p className="text-sm text-blue-500">Pontos: {stage.points_awarded ?? 0}</p>
-                {badgeToAward && (
-                    <div className="!mt-3">
-                        <p className="text-sm font-medium text-gray-700 !mb-1">Recompensa por completar esta etapa:</p>
-                        <BadgeCard badge={badgeToAward} earned={userProgress?.earned_badge_ids.includes(badgeToAward.id) || false} />
-                    </div>
-                )}
-                {!isCompleted && (
-                  <button 
-                    onClick={() => handleCompleteStage(stage.id)}
-                    className="!mt-4 !px-4 !py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50"
-                    disabled={!userProgress} // Desabilita se o progresso não carregou
-                  >
-                    Marcar como Concluída
-                  </button>
-                )}
+      <section className="glass-panel text-white">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            {trail.icon_url ? (
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+                <Image src={trail.icon_url} alt={`${trail.name} icon`} width={48} height={48} className="rounded-full" />
               </div>
-            );
-          })}
+            ) : null}
+            <div>
+              <h2 className="text-3xl font-semibold text-white">{trail.name}</h2>
+              <p className="mt-2 max-w-2xl text-sm text-white/70">{trail.description}</p>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white/80">
+            {stages.length} etapa{stages.length === 1 ? "" : "s"}
+          </div>
         </div>
-      ) : (
-        <p className="text-gray-500">Nenhuma etapa definida para esta trilha ainda.</p>
-      )}
+      </section>
+
+      <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
+        <h3 className="text-2xl font-semibold text-slate-900">Etapas da Trilha</h3>
+        {stages.length > 0 ? (
+          <div className="mt-6 space-y-4">
+            {stages.map((stage, index) => {
+              const isCompleted = userProgress?.completed_stage_ids.includes(stage.id);
+              const badgeToAward = stage.badge_id_to_award ? mockBadges.find((b) => b.id === stage.badge_id_to_award) : null;
+              return (
+                <div
+                  key={stage.id}
+                  className={`rounded-2xl border p-5 transition ${
+                    isCompleted
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <h4
+                    className={`text-lg font-semibold ${
+                      isCompleted ? "text-emerald-700" : "text-slate-900"
+                    }`}
+                  >
+                    Etapa {index + 1}: {stage.name} {isCompleted && "(Concluída)"}
+                  </h4>
+                  <p className="mt-2 text-sm text-slate-600">{stage.description}</p>
+                  <p className="mt-3 text-sm font-medium text-[--color-eurofarma-blue]">
+                    Pontos: {stage.points_awarded ?? 0}
+                  </p>
+                  {badgeToAward && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-sm font-medium text-slate-700">
+                        Recompensa por completar esta etapa:
+                      </p>
+                      <BadgeCard
+                        badge={badgeToAward}
+                        earned={Boolean(userProgress?.earned_badge_ids.includes(badgeToAward.id))}
+                      />
+                    </div>
+                  )}
+                  {!isCompleted && (
+                    <button
+                      onClick={() => handleCompleteStage(stage.id)}
+                      className="mt-4 inline-flex items-center justify-center rounded-full bg-[--color-eurofarma-blue] px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={!userProgress}
+                    >
+                      Marcar como Concluída
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-slate-600">Nenhuma etapa definida para esta trilha ainda.</p>
+        )}
+      </section>
     </div>
   );
 }
-
