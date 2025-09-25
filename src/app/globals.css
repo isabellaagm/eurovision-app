@@ -1,7 +1,6 @@
 
-@import "tailwindcss/preflight"; /* Substitui @tailwind base */
-/* A diretiva @tailwind components foi removida conforme a mensagem de erro */
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
 @layer base {
   :root {

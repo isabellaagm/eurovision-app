@@ -52,7 +52,7 @@ export default async function HomePage() {
     <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16">
       <div className="flex flex-col gap-16">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/40 via-purple-600/30 to-slate-900 p-10 shadow-2xl">
+        <div className="mt-4 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/40 via-purple-600/30 to-slate-900 p-10 shadow-2xl">
           <div className="absolute -top-20 -right-10 h-64 w-64 rounded-full bg-indigo-500/40 blur-3xl" />
           <div className="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-purple-500/30 blur-3xl" />
 
