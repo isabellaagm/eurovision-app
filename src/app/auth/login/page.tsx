@@ -50,7 +50,7 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-gradient-to-br from-white via-[#f4f6ff] to-white px-4 py-12">
       <div className="w-full max-w-md space-y-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
         <div className="space-y-3 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[--color-eurofarma-blue]/20 bg-[--color-eurofarma-blue]/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <span className="inline-flex items-center gap-2 rounded-full border border-eurofarma-blue/20 bg-eurofarma-blue/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-300">
             <Lock className="h-4 w-4" /> Área Restrita
           </span>
           <h1 className="text-2xl font-semibold text-slate-700">Acesse o portfólio estratégico</h1>
@@ -93,7 +93,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-[--color-eurofarma-blue] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#00257a] disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-eurofarma-blue px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#00257a] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Entrar na plataforma
@@ -117,7 +117,7 @@ export default function LoginPage() {
         <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
           <p className="font-medium text-[--color-light-black]">Precisa de acesso?</p>
           <p>
-            Solicite habilitação ao time do PMO ou <Link href="/requests" className="font-medium text-[--color-eurofarma-blue]">envie uma demanda</Link> para iniciar uma nova iniciativa.
+            Solicite habilitação ao time do PMO ou <Link href="/requests" className="font-medium text-eurofarma-blue">envie uma demanda</Link> para iniciar uma nova iniciativa.
           </p>
         </div>
       </div>

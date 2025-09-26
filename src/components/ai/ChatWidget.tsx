@@ -105,7 +105,7 @@ export default function ChatWidget({ isConfigured }: ChatWidgetProps) {
     <>
       {/* Ícone flutuante */}
       <div
-        className="fixed bottom-6 right-6 z-50 cursor-pointer rounded-full bg-[--color-eurofarma-blue] p-4 text-white shadow-lg transition hover:scale-110 hover:bg-blue-700"
+        className="fixed bottom-6 right-6 z-50 cursor-pointer rounded-full bg-eurofarma-blue p-4 text-white shadow-lg transition hover:scale-110 hover:bg-blue-700"
         onClick={() => setIsOpen((o) => !o)}
       >
         <MessageCircle size={24} />
@@ -136,7 +136,7 @@ export default function ChatWidget({ isConfigured }: ChatWidgetProps) {
               key={i}
               className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow ${
                 msg.role === 'user'
-                  ? 'ml-auto bg-[--color-eurofarma-blue] text-white'
+                  ? 'ml-auto bg-eurofarma-blue text-white'
                   : 'mr-auto bg-white/90 text-slate-900'
               }`}
             >
@@ -160,7 +160,7 @@ export default function ChatWidget({ isConfigured }: ChatWidgetProps) {
           />
           <button
             type="submit"
-            className="shrink-0 rounded-full bg-[--color-eurofarma-blue] px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="shrink-0 rounded-full bg-eurofarma-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={!isConfigured}
             >
             {isConfigured ? 'Enviar' : 'Indisponível'}

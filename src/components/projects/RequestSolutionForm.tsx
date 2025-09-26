@@ -58,7 +58,7 @@ export default function RequestSolutionForm() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue focus:ring-2 focus:ring-eurofarma-blue/30"
           />
         </div>
         <div>
@@ -71,7 +71,7 @@ export default function RequestSolutionForm() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue focus:ring-2 focus:ring-eurofarma-blue/30"
           />
         </div>
         <div>
@@ -84,7 +84,7 @@ export default function RequestSolutionForm() {
             value={gerencia}
             onChange={(e) => setGerencia(e.target.value)}
             required
-            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-2 text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue focus:ring-2 focus:ring-eurofarma-blue/30"
           />
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function RequestSolutionForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="inline-flex items-center gap-2 rounded-full bg-[--color-eurofarma-blue] px-6 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-full bg-eurofarma-blue px-6 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === 'loading' ? (
             <svg

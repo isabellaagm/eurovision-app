@@ -12,30 +12,27 @@ export interface UserProfile {
 }
 
 // Representa um projeto no sistema
+interface FetchedProjectParticipant {
+  user_id: string;
+  // CORREÇÃO: Espera um array de UserProfile, mesmo que só venha um.
+  user_profiles: UserProfile[] | null; 
+}
+
 export interface Project {
-  id: string; // UUID
+  id: string;
   created_at: string;
   updated_at?: string;
   name: string;
   description?: string | null;
-  status?: string | null; // Ex: "Ideia", "Em Desenvolvimento", "Concluído"
+  status?: string | null;
   gerencia?: string | null;
-  last_modified_by_user_id?: string | null; // UUID do usuário que modificou por último
-  // Informações do usuário que modificou por último (se incluído na query)
-  users?: {
-    full_name?: string | null;
-    avatar_url?: string | null;
-  } | null;
-   project_participants?: {
-    user_id: string;
-    users?: {
-      full_name?: string | null;
-      avatar_url?: string | null;
-      job_title?: string | null;
-    } | null;
-  }[] | null;
-  // Se precisarmos de participantes diretamente no objeto Project, seria uma lista de UserProfile ou de IDs.
-  // project_participants?: ProjectParticipant[]; 
+  last_modified_by_user_id?: string | null;
+  budget_allocated?: number | null;
+
+  // CORREÇÃO: Espera um array, mesmo que só venha um perfil.
+  user_profiles: Pick<UserProfile, 'full_name' | 'avatar_url'>[] | null;
+
+  project_participants: FetchedProjectParticipant[];
 }
 
 // Representa a associação de um usuário a um projeto

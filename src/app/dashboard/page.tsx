@@ -1,20 +1,41 @@
 // src/app/dashboard/page.tsx
+// Versão com a lógica de cálculo para os gráficos simplificada e mais segura.
+
 import React from "react";
 import MetricCard from "@/components/dashboard/MetricCard";
 import ProjectsByStatusChart from "@/components/dashboard/ProjectsByStatusChart";
 import ProjectsByGerenciaChart from "@/components/dashboard/ProjectsByGerenciaChart";
-import { getDashboardMetrics, getProjectsSummary } from "@/lib/api";
+import { getDashboardMetrics, getAllProjects } from "@/lib/api"; 
 import { ExportToExcel } from "@/components/dashboard/ExportToExcel";
-import { mockProjects } from "@/lib/mockData";
 
 export default async function DashboardPage() {
+  // As buscas de dados continuam as mesmas
   const metrics = await getDashboardMetrics();
-  const projectsSummary = await getProjectsSummary();
+  const allProjects = await getAllProjects(); 
+  
+  // CORREÇÃO: Lógica para calcular os resumos dos gráficos de forma mais segura
+  const statusCounts = allProjects.reduce((acc, project) => {
+    const status = project.status ?? 'Sem status';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const gerenciaCounts = allProjects.reduce((acc, project) => {
+    const gerencia = project.gerencia ?? 'Não informada';
+    acc[gerencia] = (acc[gerencia] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const projectsSummary = {
+    byStatus: Object.entries(statusCounts).map(([name, value]) => ({ name, value })),
+    byGerencia: Object.entries(gerenciaCounts).map(([name, value]) => ({ name, value })),
+  };
 
   const totalProjects = metrics.find((metric) => metric.label.toLowerCase().includes("total"));
   const concluded = metrics.find((metric) => metric.label.toLowerCase().includes("conclu"));
   const budget = metrics.find((metric) => metric.label.toLowerCase().includes("budget"));
 
+  // ... (Suas funções de formatação 'formatNumber' e 'formatBudget' não mudam) ...
   const formatNumber = (value: string | number | undefined) => {
     if (value === undefined) return "-";
     if (typeof value === "number") {
@@ -42,32 +63,32 @@ export default async function DashboardPage() {
       <section className="glass-panel text-white">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Painel executivo
-            </div>
-            <div className="space-y-4">
-              <h1 className="text-4xl font-semibold sm:text-5xl">
-                Dashboard de Inovação
-              </h1>
-              <p className="text-base leading-relaxed text-white/70">
-                Visão consolidada das iniciativas estratégicas da Eurofarma para orientar decisões rápidas, com indicadores, engajamento dos squads e alocação de budget em um único lugar.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 text-sm text-white/70">
-              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
-                <span className="text-base font-semibold text-white">{formatNumber(totalProjects?.value)}</span>
-                Projetos ativos no portfólio
+             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Painel executivo
               </div>
-              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
-                <span className="text-base font-semibold text-white">{formatNumber(concluded?.value)}</span>
-                Concluídos no último ano
+              <div className="space-y-4">
+                <h1 className="text-4xl font-semibold sm:text-5xl">
+                  Dashboard de Inovação
+                </h1>
+                <p className="text-base leading-relaxed text-white/70">
+                  Visão consolidada das iniciativas estratégicas da Eurofarma para orientar decisões rápidas, com indicadores, engajamento dos squads e alocação de budget em um único lugar.
+                </p>
               </div>
-              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
-                <span className="text-base font-semibold text-white">{formatBudget(budget?.value, budget?.unit)}</span>
-                Budget alocado em inovação
+              <div className="flex flex-wrap gap-3 text-sm text-white/70">
+                <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
+                  <span className="text-base font-semibold text-white">{formatNumber(totalProjects?.value)}</span>
+                  Projetos ativos no portfólio
+                </div>
+                <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
+                  <span className="text-base font-semibold text-white">{formatNumber(concluded?.value)}</span>
+                  Concluídos no último ano
+                </div>
+                <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2">
+                  <span className="text-base font-semibold text-white">{formatBudget(budget?.value, budget?.unit)}</span>
+                  Budget alocado em inovação
+                </div>
               </div>
-            </div>
           </div>
 
           <div className="flex flex-col items-start gap-4 self-stretch rounded-[28px] border border-white/15 bg-white/5 p-6 shadow-[0_24px_60px_-32px_rgba(59,130,246,0.55)] backdrop-blur-xl lg:max-w-sm">
@@ -76,18 +97,15 @@ export default async function DashboardPage() {
                 Exporte insights instantaneamente
               </h2>
               <p className="text-sm text-white/70">
-                Baixe um relatório completo dos projetos com filtros aplicados para levar a conversa estratégica para fora da plataforma.
+                Baixe um relatório completo dos projetos para levar a conversa estratégica para fora da plataforma.
               </p>
             </div>
-            <ExportToExcel
-              data={mockProjects}
-              fileName="relatorio_projetos_inovacao"
-            />
+            <ExportToExcel />
           </div>
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+       <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => (
           <MetricCard
             key={metric.label}
