@@ -1,13 +1,30 @@
 // src/app/gamification/page.tsx
+
 import React from "react";
 import TrailCard from "@/components/gamification/TrailCard";
 import UserProfileGamification from "@/components/gamification/UserProfileGamification";
-import { mockInnovationTrails, mockUserGamificationProgress, mockUser, mockBadges } from "@/lib/mockData";
-// import Link from 'next/link'; // Removido pois não está sendo usado
+import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
+import { getUserProgress, listBadges, listInnovationTrails } from "@/lib/data/gamification";
 
-export default function GamificationPage() {
+// Esta página agora é um Componente de Servidor assíncrono
+export default async function GamificationPage() {
+  const supabase = await getSupabaseServerClient();
+  const { data: { user } } = await supabase!.auth.getUser();
+
+  // Busca todos os dados necessários em paralelo
+  const [trailsResult, progressResult, badgesResult] = await Promise.all([
+    listInnovationTrails(),
+    user ? getUserProgress(user.id) : Promise.resolve({ progress: null }),
+    listBadges()
+  ]);
+
+  const trails = trailsResult.trails ?? [];
+  const userProgress = progressResult.progress;
+  const allBadges = badgesResult.badges ?? [];
+
   return (
     <div className="page-shell">
+
       <section className="glass-panel text-white">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">
@@ -24,17 +41,19 @@ export default function GamificationPage() {
         </div>
       </section>
 
-      <UserProfileGamification
-        user={mockUser}
-        progress={mockUserGamificationProgress}
-        allBadges={mockBadges}
-      />
+      {user && userProgress && (
+        <UserProfileGamification
+          user={user} // Passa o usuário real
+          progress={userProgress}
+          allBadges={allBadges}
+        />
+      )}
 
       <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
         <h2 className="text-2xl font-semibold">Trilhas de Inovação Disponíveis</h2>
-        {mockInnovationTrails.length > 0 ? (
+        {trails.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {mockInnovationTrails.map((trail) => (
+            {trails.map((trail) => (
               <TrailCard key={trail.id} trail={trail} />
             ))}
           </div>

@@ -62,7 +62,7 @@ export interface TrailStage {
   description?: string | null;
   stage_sequence: number; // Ordem da etapa na trilha
   points_awarded?: number;
-  badge_id_to_award?: string | null; // UUID do badge concedido
+  badge_id?: string | null
   criteria_type?: string | null; // Tipo de critério para completar (ex: "submit_task", "receive_approval")
   criteria_details?: Record<string, unknown> | null; // JSONB com detalhes do critério
   badge_to_award?: Badge | null; // Opcional, para dados do badge
@@ -74,6 +74,7 @@ export interface InnovationTrail {
   created_at?: string;
   name: string;
   description?: string | null;
+  icon_name?: string | null;
   icon_url?: string | null;
   is_active?: boolean;
   stages?: TrailStage[]; // Populado por query separada ou join

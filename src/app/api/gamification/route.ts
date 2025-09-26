@@ -1,79 +1,53 @@
 // src/app/api/gamification/route.ts
+
 import { NextResponse } from "next/server";
-import {
-  mockUserGamificationProgress,
-  mockInnovationTrails,
-  mockBadges,
-  mockUser,
-} from "@/lib/mockData";
-// InnovationTrail e Badge não são usados diretamente aqui, mas TrailStage é.
-import { UserGamificationProgress, TrailStage } from "@/lib/types";
+import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
+import { completeStageForUser, getUserProgress } from "@/lib/data/gamification";
 
-// Esta é uma simulação em memória. Em um app real, isso seria um banco de dados.
-const userProgressStore: UserGamificationProgress = JSON.parse(JSON.stringify(mockUserGamificationProgress));
+// Handler para buscar o progresso
+export async function GET() {
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
 
-// Helper para encontrar uma etapa específica em todas as trilhas
-const findStageById = (stageId: string): TrailStage | undefined => {
-  for (const trail of mockInnovationTrails) {
-    const stage = trail.stages?.find(s => s.id === stageId);
-    if (stage) return stage;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
   }
-  return undefined;
-};
 
-export async function POST(request: Request) {
-  try {
-    // ideaId e commentId não estão sendo usados no momento.
-    // Se forem necessários no futuro, descomente e utilize-os.
-    // const { userId, action, stageId, ideaId, commentId } = await request.json();
-    const { userId, action, stageId } = await request.json();
-
-    if (userId !== mockUser.id) {
-      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
-    }
-
-    // Simulação de completar uma etapa
-    if (action === "complete_stage" && stageId) {
-      const stage = findStageById(stageId);
-      if (!stage) {
-        return NextResponse.json({ error: "Etapa não encontrada." }, { status: 404 });
-      }
-
-      // Verifica se a etapa já foi completada
-      if (userProgressStore.completed_stage_ids.includes(stageId)) {
-        return NextResponse.json({ message: "Etapa já completada anteriormente.", progress: userProgressStore }, { status: 200 });
-      }
-
-      // Atualiza o progresso
-       userProgressStore.completed_stage_ids.push(stageId);
-       userProgressStore.current_points += stage.points_awarded ?? 0;
-
-      if (stage.badge_id_to_award && !userProgressStore.earned_badge_ids.includes(stage.badge_id_to_award)) {
-        const badgeExists = mockBadges.find(b => b.id === stage.badge_id_to_award);
-        if (badgeExists) {
-            userProgressStore.earned_badge_ids.push(stage.badge_id_to_award);
-        }
-      }
-      
-      return NextResponse.json({ message: `Etapa "${stage.name}" completada!`, progress: userProgressStore });
-    }
-
-    // Endpoint para obter o progresso atual (GET seria mais apropriado, mas simplificando)
-    if (action === "get_progress") {
-        return NextResponse.json({ progress: userProgressStore });
-    }
-
-    return NextResponse.json({ error: "Ação inválida ou parâmetros ausentes." }, { status: 400 });
-
-  } catch (err) {
-    console.error("Erro na API de Gamificação:", err);
-    return NextResponse.json(
-      { error: "Erro interno do servidor." },
-      { status: 500 }
-    );
+  const { progress, error } = await getUserProgress(user.id);
+  if (error) {
+    return NextResponse.json({ error }, { status: 500 });
   }
+
+  return NextResponse.json({ progress });
 }
 
-// Poderíamos adicionar um GET handler para buscar progresso, mas para simplificar a chamada do frontend
-// vamos usar POST com uma action específica por enquanto.
+// Handler para atualizar o progresso (completar uma etapa)
+export async function POST(request: Request) {
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return NextResponse.json({ error: "Supabase não configurado." }, { status: 500 });
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
+  }
 
+  try {
+    const { stageId } = await request.json();
+    if (!stageId) {
+      return NextResponse.json({ error: "ID da etapa é obrigatório." }, { status: 400 });
+    }
+
+    const result = await completeStageForUser(user.id, stageId);
+
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: result.message, progress: result.progress });
+
+  } catch (err) {
+    console.error("Erro na API de Gamificação (POST):", err);
+    return NextResponse.json({ error: "Erro interno do servidor." }, { status: 500 });
+  }
+}
