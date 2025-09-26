@@ -1,39 +1,14 @@
-import { NextResponse } from "next/server";
-import { createProject, listProjects } from "@/lib/data/projects";
+// Conteúdo de teste para src/app/api/projects/[id]/route.ts
 
-export async function GET() {
-  const result = await listProjects();
+import { NextResponse } from 'next/server';
 
-  if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
-  }
+// Este é o código mais simples possível para uma rota dinâmica no Next.js.
+// Não tem tipos customizados, não tem importações externas.
 
-  return NextResponse.json(
-    { projects: result.projects, meta: result.meta },
-    { status: result.status });
-}
-
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { name, description, status, gerencia } = body ?? {};
-  if (!name || typeof name !== "string") {
-    return NextResponse.json(
-      { error: "Nome do projeto é obrigatório." },
-      { status: 400 }
-    );
-  }
-  const result = await createProject({
-    name,
-    description,
-    status,
-    gerencia,
-  });
-
-  if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
-  }
-  return NextResponse.json(
-    { project: result.project, meta: result.meta },
-    { status: result.status }
-  );
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  return NextResponse.json({ message: `Teste bem-sucedido para o projeto com ID: ${id}` });
 }
