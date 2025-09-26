@@ -25,7 +25,7 @@ const UserProfileGamification: React.FC<UserProfileGamificationProps> = ({ progr
         <p className="mt-1 text-sm text-slate-600">{user.job_title}</p>
       )}
       <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-gradient-to-r from-blue-50 via-white to-blue-100/60 p-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-lg font-semibold text-[--color-eurofarma-blue]">
+        <p className="text-lg font-semibold text-eurofarma-blue">
           Pontos atuais: {progress.current_points}
         </p>
         <p className="text-sm text-slate-600">

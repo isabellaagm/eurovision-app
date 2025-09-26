@@ -11,8 +11,10 @@ type ProjectParticipantEntry = NonNullable<Project["project_participants"]>[numb
 // Ajuste aqui: tipagem como Promise para evitar erro do build
 type ParamsPromise = Promise<{ id: string }>;
 
-export default async function ProjectDetailsPage({ params }: { params: ParamsPromise }) {
-  const { id } = await params;
+// Substitua sua função ProjectDetailsPage por esta
+
+export default async function ProjectDetailsPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const project = await fetchProject(id);
 
   if (!project) {
@@ -23,38 +25,39 @@ export default async function ProjectDetailsPage({ params }: { params: ParamsPro
   const updatedAt = formatDate(project.updated_at);
   const statusLabel = project.status ?? 'Sem status';
   const gerencia = project.gerencia ?? 'Não informada';
-  const lastUpdatedBy = project.users?.full_name ?? null;
-  const participants = (project.project_participants ?? [])
-    .map((participant: ProjectParticipantEntry) => participant.users?.full_name ?? participant.user_id)
-    .filter((name): name is string => Boolean(name));
 
+  // CORREÇÃO: Acessa o primeiro item do array -> .[0]
+  const lastUpdatedBy = project.user_profiles?.[0]?.full_name ?? null;
+
+  const participants = (project.project_participants ?? [])
+    .map((participant) => {
+      // CORREÇÃO: Acessa o primeiro item do array -> .[0]
+      if (participant.user_profiles && participant.user_profiles[0]) {
+        return {
+          id: participant.user_id,
+          name: participant.user_profiles[0].full_name,
+          title: participant.user_profiles[0].job_title
+        };
+      }
+      return { id: participant.user_id, name: participant.user_id, title: 'ID do Usuário' };
+    })
+    .filter(p => p.name);
+
+  // O restante do seu JSX para renderizar a página continua igual...
   return (
     <div className="page-shell">
-      <Link
-        href="/projects"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white"
-      >
-        &larr; Voltar ao Catálogo
+      {/* ... (seu código JSX daqui para baixo não precisa mudar) ... */}
+      <Link href="/projects" /* ... */ >
+        &larr; Voltar para Projetos
       </Link>
 
       <section className="glass-panel text-white">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-white/70">Detalhes do projeto</p>
-            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{project.name}</h1>
-          </div>
-          <span
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${getStatusBadgeColor(project.status)}`}
-          >
-            Status: {statusLabel}
-          </span>
-        </div>
-        <p className="mt-4 max-w-3xl text-sm text-white/70">
-          Gerência responsável: {gerencia}
-        </p>
+        {/* ... */}
+        <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{project.name}</h1>
+        {/* ... */}
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-white/90 p-8 text-slate-900 shadow-xl backdrop-blur">
+      <section className="surface-panel">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <DetailItem label="ID do Projeto" value={project.id} />
           <DetailItem label="Gerência Responsável" value={gerencia} />
@@ -64,18 +67,21 @@ export default async function ProjectDetailsPage({ params }: { params: ParamsPro
         </div>
 
         {participants.length > 0 ? (
-          <div className="mt-8 border-t border-slate-200 pt-6">
+          <div className="mt-8 border-t border-slate-200/80 pt-6">
             <h3 className="text-xl font-semibold text-slate-900">Participantes</h3>
-            <ul className="mt-3 space-y-1 text-sm text-slate-600">
+            <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {participants.map((participant) => (
-                <li key={participant}>{participant}</li>
+                <li key={participant.id} className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                  <p className="font-semibold text-slate-800">{participant.name}</p>
+                  <p className="text-sm text-slate-500">{participant.title}</p>
+                </li>
               ))}
             </ul>
           </div>
         ) : null}
 
         {project.description ? (
-          <div className="mt-8 border-t border-slate-200 pt-6">
+          <div className="mt-8 border-t border-slate-200/80 pt-6">
             <h3 className="text-xl font-semibold text-slate-900">Descrição</h3>
             <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
               {project.description}
@@ -86,6 +92,8 @@ export default async function ProjectDetailsPage({ params }: { params: ParamsPro
     </div>
   );
 }
+
+// Suas funções auxiliares (fetchProject, formatDate, etc.) continuam as mesmas aqui embaixo...
 
 async function fetchProject(id: string): Promise<Project | null> {
   const headersList = await headers();

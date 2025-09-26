@@ -11,7 +11,7 @@ const Header = () => {
           href="/"
           className="flex flex-shrink-0 items-center gap-3 text-xl font-semibold text-white"
         >
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[--color-eurofarma-blue] text-white">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-eurofarma-blue text-white">
             EV
           </span>
           <span className="hidden sm:inline">EuroVision</span>

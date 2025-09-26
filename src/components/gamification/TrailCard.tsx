@@ -12,7 +12,7 @@ const TrailCard: React.FC<TrailCardProps> = ({ trail }) => {
   return (
     <Link
       href={`/gamification/trails/${trail.id}`}
-      className="block h-full rounded-2xl border border-white/20 bg-white/90 p-6 text-slate-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[--color-eurofarma-blue]/40 hover:shadow-2xl"
+      className="block h-full rounded-2xl border border-white/20 bg-white/90 p-6 text-slate-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-eurofarma-blue/40 hover:shadow-2xl"
     >
       <div className="mb-4 flex items-center">
         {trail.icon_url && (
@@ -24,7 +24,7 @@ const TrailCard: React.FC<TrailCardProps> = ({ trail }) => {
       </div>
       <p className="mb-4 text-sm text-slate-600">{trail.description}</p>
       {/* Poderia adicionar um indicador de progresso ou status aqui */}
-      <div className="text-sm font-semibold text-[--color-eurofarma-blue]">
+      <div className="text-sm font-semibold text-eurofarma-blue">
         Ver detalhes da trilha &rarr;
       </div>
     </Link>

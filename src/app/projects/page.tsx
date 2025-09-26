@@ -120,12 +120,12 @@ export default function ProjectsPage() {
           <input
             type="text"
             placeholder="Buscar por nome..."
-            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue focus:ring-2 focus:ring-eurofarma-blue/30"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <select
-            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue] focus:ring-2 focus:ring-eurofarma-blue/30"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -136,7 +136,7 @@ export default function ProjectsPage() {
             ))}
           </select>
           <select
-            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[--color-eurofarma-blue] focus:ring-2 focus:ring-[--color-eurofarma-blue]/30"
+            className="w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-eurofarma-blue focus:ring-2 focus:ring-eurofarma-blue/30"
             value={gerenciaFilter}
             onChange={(e) => setGerenciaFilter(e.target.value)}
           >
