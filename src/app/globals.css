@@ -25,9 +25,13 @@
 }
 
 @layer components {
-  /* Suas classes de componentes personalizadas */
   .card {
-    @apply relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+    /* CORRIGIDO: Removido 'border-slate-200/60' e 'bg-white/95' do @apply */
+    @apply relative overflow-hidden rounded-3xl border p-6 text-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+    
+    /* CORRIGIDO: Cores com opacidade declaradas manualmente */
+    border-color: rgba(226, 232, 240, 0.6); /* slate-200 com 60% de opacidade */
+    background-color: rgba(255, 255, 255, 0.95); /* white com 95% de opacidade */
   }
 
   .btn-primary {
@@ -46,7 +50,12 @@
     border-radius: 32px;
     background: linear-gradient(140deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.04) 100%);
     box-shadow: 0 32px 80px -32px rgba(30, 64, 175, 0.75);
-    @apply relative overflow-hidden border border-white/12 p-10 backdrop-blur-2xl;
+    
+    /* CORRIGIDO: Removido 'border-white/12' do @apply */
+    @apply relative overflow-hidden border p-10 backdrop-blur-2xl;
+
+    /* CORRIGIDO: Cor do border declarada manualmente */
+    border-color: rgba(255, 255, 255, 0.12); /* white com 12% de opacidade */
   }
 
   .surface-panel {
@@ -67,4 +76,3 @@
     @apply pointer-events-none absolute inset-x-0 top-0 h-px;
   }
 }
-
