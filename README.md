@@ -1,49 +1,99 @@
-1. **Node.js 20+** – utilize o mesmo runtime usado pelo Next.js 15.
-2. **pnpm** – o projeto usa pnpm para gerenciar dependências (`corepack enable pnpm`).
+# EuroVision – Plataforma de Inovação
 
-## Configuração de variáveis de ambiente
+Painel executivo que centraliza KPIs de inovação, pipeline de projetos, trilhas de engajamento e serviços de apoio para squads corporativos da Eurofarma.
 
-Crie um arquivo `.env.local` na raiz do projeto com as variáveis abaixo:
+[🔗 Acesse a demo em produção](https://eurovision-app-rust.vercel.app/)
+
+## Tecnologias principais
+
+- Next.js 14 (App Router) e React 18 para a camada web e SSR.
+- TypeScript, ESLint e Tailwind CSS para tipagem, linting e estilização responsiva.
+- Supabase (auth, helpers SSR/CSR) como backend-as-a-service e persistência primária.
+- SWR, Recharts e XLSX para data fetching, visualização de gráficos e exportação de relatórios.
+
+## Pré-requisitos
+
+- Node.js 20+ para compatibilidade com o runtime esperado pelo Next.js.
+- pnpm habilitado via `corepack` para gerenciar dependências.
+
+## Como começar
+
+1. Instale as dependências: `pnpm install`.
+2. Rode o servidor de desenvolvimento em `http://localhost:3000`: `pnpm dev`.
+3. Gere uma build de produção quando necessário: `pnpm build` (e execute com `pnpm start`).
+4. Verifique o lint antes de enviar mudanças: `pnpm lint`.
+
+## Variáveis de ambiente
+
+Configure um arquivo `.env.local` com as credenciais abaixo para habilitar Supabase e o assistente de IA.
 
 | Variável | Obrigatória | Descrição |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Sim (para listar/prover projetos reais) | URL do projeto Supabase. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sim (para listar/prover projetos reais) | Chave anônima utilizada pelo cliente/SSR do Supabase. |
-| `OPENROUTER_API_KEY` | Opcional | Necessária apenas para habilitar o widget de chat com IA (`/api/ai/chat`). Sem essa chave o widget permanece desativado no frontend. |
+| `NEXT_PUBLIC_SUPABASE_URL` | Sim | Endpoint do projeto Supabase. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sim | Chave anônima usada pelo cliente (SSR/CSR). |
+| `OPENROUTER_API_KEY` | Opcional | Necessária apenas para ativar o chat de IA. |
 
-> Caso `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` não estejam configuradas, os endpoints de projetos (`/api/projects`) retornam erro 500 informando que o Supabase não está habilitado.
+Sem `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`, os endpoints de projetos retornam erro e caem no modo mock; sem `OPENROUTER_API_KEY`, o chat permanece desabilitado.
 
-## Instalação e scripts úteis
+## Principais recursos
 
-```bash
-pnpm install          # instala dependências
-pnpm dev              # inicia o servidor de desenvolvimento em http://localhost:3000
-pnpm lint             # executa as regras de lint (recomendado antes de enviar alterações)
-```
+### Home de visão geral
+Landing page apresenta chamadas para dashboards, portfólio e trilhas de engajamento com CTA de login para usuários autorizados.
 
-## Fontes de dados
+### Dashboard executivo
+Consolida métricas estratégicas, gráficos por status/gerência, cards de destaque e exportação rápida do portfólio em Excel.
 
-- O arquivo [`supabase/schema.sql`](supabase/schema.sql) consolida o modelo operacional e analítico sugerido (usuários, portfólio, gamificação e fatos dimensionais) e pode ser aplicado com `supabase db push`.
-- As rotas de projetos (`/api/projects` e `/api/projects/[id]`) agora fazem fallback automático para os mocks sempre que o Supabase não estiver configurado ou o usuário não possuir sessão válida, permitindo navegação local sem infraestrutura.
+### Portfólio de projetos
+Listagem filtrável por palavra-chave, status e gerência, com feedback de carregamento/erro e cards detalhados para cada projeto.
 
-## Learn More
-### Projetos
-- A listagem (`/projects`) e a página de detalhes (`/projects/[id]`) consomem os mesmos endpoints da API (`/api/projects` e `/api/projects/[id]`), garantindo consistência com o Supabase e compartilhando autenticação por cookies.
-- Quando os dados vêm do Supabase, campos como `created_at`, `updated_at`, `status` e participantes são exibidos automaticamente.
+Os dados vêm do Supabase quando configurado, com fallback automático para mocks e validação de sessão do usuário.
 
-### Dashboard
-- Continua utilizando os mocks presentes em `src/lib/mockData.ts` para métricas e gráficos.
+### Gamificação e trilhas
+Página server-side que busca trilhas de inovação, progresso individual e badges diretamente do Supabase para engajar squads.
 
-### Gamificação
-- Os mocks e tipagens (`UserGamificationProgress`, `InnovationTrail`, `TrailStage`) foram alinhados com o formato snake_case usado pelo Supabase, evitando divergências entre componentes e dados fictícios.
+### Solicitações de solução
+Formulário client-side que envia novos desafios para o time de inovação e mantém estado otimista usando um endpoint em memória (prototipação).
 
-### Solicitações de solução (`/requests`)
-- O endpoint ainda mantém uma implementação em memória para fins de protótipo. Para persistência real recomenda-se:
-  1. Criar uma tabela (ex.: `innovation_solution_requests`) no Supabase com os campos `id`, `title`, `description`, `gerencia`, `created_at` e `created_by`.
-  2. Ajustar o handler `/api/requests` para gravar/consultar via Supabase usando a política de RLS apropriada.
-  3. Opcionalmente, exibir o histórico de solicitações no frontend com feedback otimista.
+### Assistente virtual com IA
+Widget flutuante que habilita conversa contextual sobre o portfólio quando a chave OpenRouter está configurada; quando ausente, permanece em modo somente leitura.
 
-## Deploy on Vercel
-## Observações sobre o widget de IA
+## Camada de dados e APIs
 
-O componente `ChatWidget` agora verifica se `OPENROUTER_API_KEY` está configurada no servidor. Quando ausente, o botão permanece visível mas o formulário fica desativado e exibe uma mensagem guiando a configuração necessária, evitando erros no cliente.
+- `getDashboardMetrics`, `getAllProjects` e `getProjectsSummary` reutilizam `listProjects`, agregando dados em memória para KPIs e gráficos.
+- `listProjects`/`fetchProjectById` aplicam autorização via Supabase e fallback para mocks quando a infraestrutura não está configurada.
+- Mutations (`createProject`, `updateProject`, `removeProject`) exigem usuário autenticado e retornam mensagens claras em caso de indisponibilidade do Supabase.
+
+### Endpoints relevantes
+
+- `GET /api/projects` – lista projetos com metadados da origem; `POST /api/projects` cria um novo registro validando o payload.
+- `GET /api/requests` e `POST /api/requests` – leitura e criação de solicitações em memória para prototipação rápida.
+- `GET /api/export/excel` – gera relatório `.xlsx` com dados atuais do portfólio.
+- `POST /api/ai/chat` – proxy seguro para OpenRouter com contexto mockado do portfólio.
+
+## Autenticação e middleware
+
+Tela de login usa Supabase Password Auth, exibindo feedback amigável caso as variáveis não estejam configuradas e redirecionando para `/projects` após sucesso.
+
+O middleware renova sessões Supabase em todas as rotas (exceto estáticos) e compartilha cookies entre requisições SSR.
+
+Helpers `getSupabaseServerClient` e `getSupabaseBrowserClient` garantem reuso seguro dos clientes em ambiente server/client.
+
+## Estrutura do repositório
+
+- `src/app`: páginas do App Router (dashboard, projetos, gamificação, requests, APIs).
+- `src/components`: componentes reutilizáveis (dashboard, projetos, chat, layout).
+- `src/lib`: camada de dados, clientes Supabase, mocks e tipagens compartilhadas.
+- `documentacao`: artefatos em PDF com requisitos, arquitetura, cronograma e plano de testes.
+
+## Documentação complementar
+
+Consulte a pasta `documentacao/` para relatórios de requisitos, arquitetura planejada, casos de uso, cronograma, plano de testes e relação de tecnologias.
+
+## Scripts úteis
+
+- `pnpm dev` – modo desenvolvimento.
+- `pnpm build` / `pnpm start` – build e execução em produção.
+- `pnpm lint` – checagem de qualidade.
+
+## Testing
+⚠️ Não executado (revisão estática)
